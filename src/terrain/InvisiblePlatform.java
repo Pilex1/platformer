@@ -28,9 +28,9 @@ public class InvisiblePlatform extends Platform {
 	}
 
 	@Override
-	public void onRender(PVector pos, PVector size) {
+	public void onRender() {
 		if (activated)
-			super.onRender(pos, size);
+			super.onRender();
 	}
 
 	public void reset() {

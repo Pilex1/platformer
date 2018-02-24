@@ -30,7 +30,7 @@ public class Game extends Canvas {
 	// private SoundFile satie;
 
 	public Game() {
-		
+
 		super(P.width, P.height);
 
 		// satie = new SoundFile(Processing, "Satie.mp3");
@@ -43,12 +43,12 @@ public class Game extends Canvas {
 
 		player = new Player();
 		addEntity(new Guide());
-		addEntity(new Guide2());
-		addEntity(new Guide3());
-		addEntity(new Guide4());
-		addEntity(new Guide5());
-		addEntity(new Guide6());
-		addEntity(new Mystery());
+//		addEntity(new Guide2());
+//		addEntity(new Guide3());
+//		addEntity(new Guide4());
+//		addEntity(new Guide5());
+//		addEntity(new Guide6());
+//		addEntity(new Mystery());
 
 		loadPlatforms();
 
@@ -67,6 +67,35 @@ public class Game extends Canvas {
 		 * += sx;
 		 */
 
+	}
+
+	@Override
+	protected void onRender(PVector pos, PVector size) {
+		beginDraw();
+		background(120,150,210);
+		for (Platform p : getActivePlatforms()) {
+			p.onRender();
+		}
+		if (player.isEditing())
+			guide.onRender();
+		if (player.isRemoving())
+			guideRemoval.onRender();
+		for (Entity e : getActiveEntities()) {
+			e.onRender();
+		}
+		renderBuffer(pos, size);
+		endDraw();
+	}
+
+	@Override
+	protected void onUpdate(PVector pos, PVector size) {
+		for (Platform p : getActivePlatforms()) {
+			p.onUpdate();
+		}
+		for (Entity e : getActiveEntities()) {
+			e.update();
+		}
+		requestGraphicalUpdate();
 	}
 
 	public void resetBlocks() {
@@ -227,31 +256,6 @@ public class Game extends Canvas {
 		return platforms.toArray(new Platform[0]);
 	}
 
-	@Override
-	protected void onRender(PVector pos, PVector size) {
-		for (Platform p : getActivePlatforms()) {
-			p.onRender(pos, size);
-		}
-		if (player.isEditing())
-			guide.onRender(pos, size);
-		if (player.isRemoving())
-			guideRemoval.onRender(pos, size);
-		for (Entity e : getActiveEntities()) {
-			e.onRender(pos, size);
-		}
-
-	}
-
-	@Override
-	protected void onUpdate(PVector pos, PVector size) {
-		for (Platform p : getActivePlatforms()) {
-			p.onUpdate();
-		}
-		for (Entity e : getActiveEntities()) {
-			e.update();
-		}
-	}
-
 	public int getChunk() {
 		return (int) (player.getHitbox().getCenterX() / Chunk.Width) + 1;
 	}
@@ -355,7 +359,7 @@ public class Game extends Canvas {
 
 	@Override
 	protected void onResize(float newWidth, float newHeight) {
-		System.err.println("Don't resize the canvas!");
+		// System.err.println("Don't resize the canvas!");
 	}
 
 }

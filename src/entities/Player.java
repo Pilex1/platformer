@@ -126,9 +126,9 @@ public class Player extends Npc {
 	}
 
 	private void renderDebug() {
-		P.fill(Color.White.val);
-		P.textFont(Fonts.TwCenMT, 32);
-		P.textAlign(PConstants.LEFT, PConstants.TOP);
+		P.game.fill(Color.White);
+		P.game.textFont(Fonts.TwCenMT, 32);
+		P.game.textAlign(PConstants.LEFT, PConstants.TOP);
 
 		String debug = "";
 		debug += "P: " + StringUtil.beautifyString(hitbox.getCenter()) + "\n";
@@ -141,7 +141,7 @@ public class Player extends Npc {
 			debug += "RP: " + StringUtil.beautifyString(P.game.getGuideRemovalPos()) + "\n";
 			debug += "RS: " + StringUtil.beautifyString(P.game.getGuideRemovalSize()) + "\n";
 		}
-		P.text(debug, 0, 0);
+		P.game.text(debug, 0, 0);
 	}
 
 	private PVector blockify(PVector v, int x) {
@@ -149,10 +149,10 @@ public class Player extends Npc {
 	}
 
 	private void handleEditing() {
-		P.fill(Color.White.val);
-		P.textFont(Fonts.TwCenMT, 32);
-		P.textAlign(PConstants.CENTER, PConstants.BOTTOM);
-		P.text(platformId.name(), P.width / 2, P.height);
+		P.game.fill(Color.White);
+		P.game.textFont(Fonts.TwCenMT, 32);
+		P.game.textAlign(PConstants.CENTER, PConstants.BOTTOM);
+		P.game.text(platformId.name(), P.width / 2, P.height);
 
 		PVector mousePos = getMousePos();
 		if (editing == Editing.EditPos) {
@@ -209,7 +209,11 @@ public class Player extends Npc {
 		if (npc != null && npc.getDistanceTo(this) > npcRange) {
 			leaveAllTalking();
 		}
-
+	}
+	
+	@Override
+	public void onRender() {
+		super.onRender();
 		if (P.debug) {
 			if (isEditing()) {
 				handleEditing();
@@ -220,23 +224,23 @@ public class Player extends Npc {
 		}
 
 		if (tutorialMove == false) {
-			P.fill(Color.White.val);
-			P.textFont(Fonts.TwCenMT, 32);
-			P.textAlign(PConstants.CENTER, PConstants.TOP);
+			P.game.fill(Color.White);
+			P.game.textFont(Fonts.TwCenMT, 32);
+			P.game.textAlign(PConstants.CENTER, PConstants.TOP);
 
-			P.text("Press W, A, S, D to move around.", P.width / 2, 20);
+			P.game.text("Press W, A, S, D to move around.", P.width / 2, 20);
 		} else if (tutorialTalk == false) {
-			P.fill(Color.White.val);
-			P.textFont(Fonts.TwCenMT, 32);
-			P.textAlign(PConstants.CENTER, PConstants.TOP);
+			P.game.fill(Color.White);
+			P.game.textFont(Fonts.TwCenMT, 32);
+			P.game.textAlign(PConstants.CENTER, PConstants.TOP);
 
-			P.text("Press ENTER when near an NPC to interact.", P.width / 2, 20);
+			P.game.text("Press ENTER when near an NPC to interact.", P.width / 2, 20);
 		}
 
-		P.fill(Color.White.val);
-		P.textFont(Fonts.TwCenMT, 24);
-		P.textAlign(PConstants.RIGHT, PConstants.BOTTOM);
-		P.text("Deaths: " + deaths, P.width - 10, P.height - 10);
+		P.game.fill(Color.White);
+		P.game.textFont(Fonts.TwCenMT, 24);
+		P.game.textAlign(PConstants.RIGHT, PConstants.BOTTOM);
+		P.game.text("Deaths: " + deaths, P.width - 10, P.height - 10);
 	}
 
 	private void setEditing(Editing editing) {

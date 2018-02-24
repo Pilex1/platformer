@@ -51,7 +51,7 @@ public class Platform implements Serializable {
 		return friction;
 	}
 
-	public void onRender(PVector pos, PVector size) {
+	public void onRender() {
 		if (strokeColor == null) {
 			P.game.stroke(fillColor);
 		} else {

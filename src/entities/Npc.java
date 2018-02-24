@@ -1,14 +1,14 @@
 package entities;
 
-import static main.MainApplet.*;
+import static main.MainApplet.P;
 
-import java.util.*;
+import java.util.ArrayList;
 
 import core.Fonts;
 import processing.core.PConstants;
 import processing.core.PVector;
-import terrain.*;
-import util.*;
+import util.Color;
+import util.Rectangle;
 
 public class Npc extends Entity {
 
@@ -62,30 +62,31 @@ public class Npc extends Entity {
 
 			P.game.fill(Color.White.Transparent());
 			P.game.stroke(Color.Black.Transparent());
-			P.game.rect(x, y, w, h, 5);
+			P.game.roundedRect(x, y, w, h, 5);
 			if (playerpos.x <= getHitbox().getX1()) {
-				P.ellipse(x + w, y + h + 10, 20, 20);
+				P.game.circle(x + w, y + h + 10, 20);
 			} else {
-				P.ellipse(x, y + h + 10, 20, 20);
+				P.game.circle(x, y + h + 10, 20);
 			}
 
 			// conversation
 			String text = conversations.get(conversationId);
-			P.fill(Color.Black.Transparent().val);
-			P.textSize(24);
-			P.textAlign(PConstants.CENTER, PConstants.CENTER);
-			P.text(text, x + margin, y + margin, w - 2 * margin, h - 2 * margin);
+			P.game.fill(Color.Black.Transparent());
+			P.game.textSize(24);
+			P.game.textAlign(PConstants.CENTER, PConstants.CENTER);
+			P.game.text(text, x + margin, y + margin, w - 2 * margin, h - 2 * margin);
 
 			// npc name
-			P.textAlign(PConstants.LEFT, PConstants.BOTTOM);
-			P.textSize(24);
-			P.fill(Color.White.Transparent().val);
-			P.text(name, x, y);
+			P.game.textAlign(PConstants.LEFT, PConstants.BOTTOM);
+			P.game.textSize(24);
+			P.game.fill(Color.White.Transparent());
+			// P.game.text(name, x, y);
 		} else {
-			P.textAlign(PConstants.CENTER, PConstants.BOTTOM);
-			P.fill(Color.White.Transparent().val);
-			P.textFont(Fonts.TwCenMT, 24);
-			P.text(name, hitbox.getCenterX() - camera.x, hitbox.getY1() - camera.y - 10);
+			P.game.textAlign(PConstants.CENTER, PConstants.BOTTOM);
+			P.game.fill(Color.White.Transparent());
+			P.game.textFont(Fonts.TwCenMT, 24);
+			// P.game.text(name, hitbox.getCenterX() - camera.x, hitbox.getY1() - camera.y -
+			// 10);
 		}
 	}
 

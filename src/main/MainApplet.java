@@ -1,10 +1,7 @@
 package main;
 
-import core.Canvas;
-import core.Fonts;
 import core.StaticGridLayout;
 import processing.core.PVector;
-import util.Color;
 
 public class MainApplet extends Applet {
 

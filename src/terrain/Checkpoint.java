@@ -34,15 +34,15 @@ public class Checkpoint extends Platform {
 	}
 
 	@Override
-	public void onRender(PVector pos, PVector size) {
-		P.stroke(Color.Black.val);
-		P.fill(P.color(20, 20, 30));
+	public void onRender() {
+		P.game.stroke(Color.Black);
+		P.game.fill(20, 20, 30);
 		P.rect(hitbox.getX1() - P.getCamera().x, hitbox.getY2() - stickHeight - P.getCamera().y, stickWidth, stickHeight);
 
 		if (checked) {
-			P.fill(Color.MediumGreen.val);
+			P.game.fill(Color.MediumGreen);
 		} else {
-			P.fill(Color.Red.val);
+			P.game.fill(Color.Red);
 		}
 		P.triangle(hitbox.getX1() - P.getCamera().x, hitbox.getY1() - P.getCamera().y, hitbox.getX1() + flagWidth - P.getCamera().x,
 				hitbox.getY1() + flagHeight / 2 - P.getCamera().y, hitbox.getX1() - P.getCamera().x,
