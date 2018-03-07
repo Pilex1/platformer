@@ -3,25 +3,45 @@ package terrain;
 import static main.MainApplet.*;
 
 import java.io.*;
+import java.util.ArrayList;
 
 import entities.*;
+import main.EntityManager;
+import main.TerrainManager;
+import processing.core.PImage;
 import processing.core.PVector;
 import util.*;
 
 public class Platform implements Serializable {
 
-	public static final String Id = "P";
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-	protected Color strokeColor;
-	protected Color fillColor;
+	protected transient PImage img;
 
-	protected float friction = 0.85f;
+	protected float friction = 0.8f;
 	protected Rectangle hitbox;
 	protected boolean solid = true;
 
 	public Platform(PVector pos) {
 		hitbox = new Rectangle(pos, new PVector(50, 50));
-		fillColor = Color.DarkBlue;
+		onLoad();
+	}
+
+	public Platform(String[] arr) {
+		this(new PVector(Float.parseFloat(arr[0]), Float.parseFloat(arr[1])));
+	}
+
+	// called when deserialising
+	public void onLoad() {
+		img = Images.platform;
+	}
+
+	public void onRender() {
+		P.game.transparency(128);
+		P.game.image(img, hitbox.topLeft(), P.getCamera());
 	}
 
 	public boolean isSolid() {
@@ -51,16 +71,6 @@ public class Platform implements Serializable {
 		return friction;
 	}
 
-	public void onRender() {
-		if (strokeColor == null) {
-			P.game.stroke(fillColor);
-		} else {
-			P.game.stroke(strokeColor);
-		}
-		P.game.fill(fillColor);
-		P.game.rect(hitbox, P.getCamera());
-	}
-
 	public void onCollisionUp(Entity e) {
 		if (!solid)
 			return;
@@ -85,29 +95,23 @@ public class Platform implements Serializable {
 		e.setVelx(0);
 	}
 
-	public String getId() {
-		return Id;
+	public void reset() {
+
 	}
 
-	public String saveString() {
-		return getId() + " " + hitbox.getX1() + " " + hitbox.getY1();
+	public void moveTo(float newX, float newY) {
+		TerrainManager.removePlatform(this);
+		hitbox.setPos(new PVector(newX, newY));
+		TerrainManager.addPlatform(this);
 	}
 
-	public static Platform loadString(String s) {
-		String[] arr = s.split(" ");
-		PVector pos = new PVector(Float.parseFloat(arr[1]), Float.parseFloat(arr[2]));
-		if (arr[0].equals(Platform.Id))
-			return new Platform(pos);
-		if (arr[0].equals(Checkpoint.Id))
-			return new Checkpoint(pos);
-		if (arr[0].equals(VBouncePlatform.Id))
-			return new VBouncePlatform(pos);
-		if (arr[0].equals(InvisiblePlatform.Id))
-			return new InvisiblePlatform(pos);
-		if (arr[0].equals(PhantomPlatform.Id))
-			return new PhantomPlatform(pos);
-		if (arr[0].equals(HBouncePlatform.Id))
-			return new HBouncePlatform(pos);
-		return null;
+	public Entity[] getEntitiesOn() {
+		ArrayList<Entity> entities = new ArrayList<>();
+		for (Entity e : EntityManager.getActiveEntities(true)) {
+			if (e.getPlatformsStandingOn().contains(this)) {
+				entities.add(e);
+			}
+		}
+		return entities.toArray(new Entity[0]);
 	}
 }

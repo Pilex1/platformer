@@ -2,13 +2,17 @@ package terrain;
 
 import static main.MainApplet.*;
 
+import main.EntityManager;
+import main.TerrainManager;
 import processing.core.*;
 import util.*;
 
 public class Checkpoint extends Platform {
 
-	public static final String Id = "C";
-
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static float stickHeight = 120;
 	public static float stickWidth = 20;
 	public static float flagHeight = 60;
@@ -24,11 +28,10 @@ public class Checkpoint extends Platform {
 		solid = false;
 	}
 
-	@Override
-	public String getId() {
-		return Id;
+	public Checkpoint(String[] arr) {
+		super(arr);
 	}
-
+	
 	public boolean isChecked() {
 		return checked;
 	}
@@ -51,8 +54,8 @@ public class Checkpoint extends Platform {
 
 	@Override
 	public void onUpdate() {
-		if (isIntersecting(P.game.getPlayer())) {
-			for (Checkpoint c : P.game.getAllCheckpoints()) {
+		if (isIntersecting(EntityManager.getPlayer())) {
+			for (Checkpoint c : TerrainManager.getAllCheckpoints()) {
 				c.checked = false;
 			}
 			checked = true;

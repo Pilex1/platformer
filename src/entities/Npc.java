@@ -5,6 +5,7 @@ import static main.MainApplet.P;
 import java.util.ArrayList;
 
 import core.Fonts;
+import main.EntityManager;
 import processing.core.PConstants;
 import processing.core.PVector;
 import util.Color;
@@ -12,6 +13,10 @@ import util.Rectangle;
 
 public class Npc extends Entity {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	protected String name;
 	protected ArrayList<String> conversations = new ArrayList<>();
 	private int conversationId = -1;
@@ -50,7 +55,7 @@ public class Npc extends Entity {
 			float x = 0;
 			float y = 0;
 
-			PVector playerpos = P.game.getPlayer().getHitbox().getCenter();
+			PVector playerpos = EntityManager.getPlayer().getHitbox().getCenter();
 			if (playerpos.x <= getHitbox().getX1()) {
 				// render text on left
 				x = hitbox.getCenterX() - P.getCamera().x - 20 - w;
@@ -84,7 +89,7 @@ public class Npc extends Entity {
 		} else {
 			P.game.textAlign(PConstants.CENTER, PConstants.BOTTOM);
 			P.game.fill(Color.White.Transparent());
-			P.game.textFont(Fonts.TwCenMT, 24);
+			P.game.textFont(Fonts.LatoLight, 24);
 			// P.game.text(name, hitbox.getCenterX() - camera.x, hitbox.getY1() - camera.y -
 			// 10);
 		}

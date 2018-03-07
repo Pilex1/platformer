@@ -1,27 +1,29 @@
 package terrain;
 
+
 import entities.*;
 import processing.core.*;
 import util.*;
 
 public class VBouncePlatform extends Platform {
 
-	public static final String Id = "V";
-
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private float hBounceStrength = 1.05f;
 	private float vBounceStrength = -1.5f;
 	private float maxVel = -20f;
 
 	public VBouncePlatform(PVector pos) {
 		super(pos);
-		fillColor = Color.Purple;
 	}
-
+	
 	@Override
-	public String getId() {
-		return Id;
+	public void onLoad() {
+		img = Images.platform_vbounce;
 	}
-
+	
 	@Override
 	public void onCollisionUp(Entity e) {
 		if (e.getVely() >= 0)

@@ -18,13 +18,7 @@ public class Chunk {
 
 	public void resetBlocks() {
 		for (Platform p : platforms) {
-			if (p instanceof InvisiblePlatform) {
-				InvisiblePlatform i = (InvisiblePlatform) p;
-				i.reset();
-			} else if (p instanceof PhantomPlatform) {
-				PhantomPlatform ph = (PhantomPlatform) p;
-				ph.reset();
-			}
+			p.reset();
 		}
 	}
 

@@ -6,22 +6,23 @@ import util.*;
 
 public class HBouncePlatform extends Platform {
 
-	public static final String Id = "H";
-
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private float hBounceStrength = 70f;
 	private float vBounceStrength = -8f;
 	private float maxVel = -15f;
 
 	public HBouncePlatform(PVector pos) {
 		super(pos);
-		fillColor = Color.LightGreen;
 	}
 
 	@Override
-	public String getId() {
-		return Id;
+	public void onLoad() {
+		img = Images.platform_hbounce;
 	}
-
+	
 	@Override
 	public void onCollisionLeft(Entity e) {
 		if (e.getVelx() >= 0)

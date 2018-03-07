@@ -6,18 +6,15 @@ import processing.core.*;
 // invisible until the player jumps and hits the block
 public class InvisiblePlatform extends Platform {
 
-	public static final String Id = "I";
-
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private boolean activated = false;
 
 	public InvisiblePlatform(PVector pos) {
 		super(pos);
 		solid = false;
-	}
-
-	@Override
-	public String getId() {
-		return Id;
 	}
 
 	@Override
@@ -33,6 +30,7 @@ public class InvisiblePlatform extends Platform {
 			super.onRender();
 	}
 
+	@Override
 	public void reset() {
 		activated = false;
 		solid = false;

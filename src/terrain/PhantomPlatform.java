@@ -6,17 +6,14 @@ import processing.core.*;
 // appears to be a regular block, then disappears when standing on it or jumping and hitting it
 public class PhantomPlatform extends Platform {
 
-	public static final String Id = "PH";
-
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private boolean activated = false;
 
 	public PhantomPlatform(PVector pos) {
 		super(pos);
-	}
-
-	@Override
-	public String getId() {
-		return Id;
 	}
 
 	@Override
@@ -37,6 +34,7 @@ public class PhantomPlatform extends Platform {
 			super.onRender();
 	}
 
+	@Override
 	public void reset() {
 		activated = false;
 	}
