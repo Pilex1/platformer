@@ -25,26 +25,6 @@ public class MainApplet extends Applet {
 	}
 
 	@Override
-	public void keyTyped(KeyEvent event) {
-		EntityManager.getPlayer().onKeyPress(event.getKey());
-	}
-
-	@Override
-	public void mousePressed(MouseEvent event) {
-		EntityManager.getPlayer().onMousePress(event.getButton());
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent event) {
-		EntityManager.getPlayer().onMouseRelease(event.getButton());
-	}
-
-	@Override
-	public void mouseWheel(MouseEvent event) {
-		EntityManager.getPlayer().onScroll(event.getCount());
-	}
-
-	@Override
 	public void dispose() {
 		super.dispose();
 		TerrainManager.savePlatforms();

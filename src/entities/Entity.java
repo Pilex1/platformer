@@ -49,7 +49,7 @@ public abstract class Entity implements Serializable {
 			vel.y = 0;
 		}
 		vel = MathUtil.clampAbsolute(vel, maxVel);
-		
+
 		moveRight(vel.x);
 		moveDown(vel.y);
 
@@ -160,7 +160,7 @@ public abstract class Entity implements Serializable {
 	// gets the platforms which the entitiy is standing on
 	public ArrayList<Platform> getPlatformsStandingOn() {
 		hitbox.incrY(epsilon);
-		ArrayList<Platform> colliding = TerrainManager.getCollisions(this);
+		ArrayList<Platform> colliding = TerrainManager.getCollisions(this, true);
 		hitbox.decrY(epsilon);
 		return colliding;
 	}
@@ -177,7 +177,7 @@ public abstract class Entity implements Serializable {
 	// moves up by a small amount
 	private void jumpDy(float dy) {
 		hitbox.decrY(dy);
-		ArrayList<Platform> colliding = TerrainManager.getCollisions(this);
+		ArrayList<Platform> colliding = TerrainManager.getCollisions(this, true);
 		// find the bottom-most edge out of all the colliding platforms
 		float topMost = Float.MIN_VALUE;
 		for (Platform platform : colliding) {
@@ -190,7 +190,7 @@ public abstract class Entity implements Serializable {
 			p.onCollisionUp(this);
 		}
 
-		ArrayList<Platform> collidingNotSolid = TerrainManager.getCollisionsUnsolid(this);
+		ArrayList<Platform> collidingNotSolid = TerrainManager.getCollisions(this, false);
 		for (Platform p : collidingNotSolid) {
 			p.onCollisionUp(this);
 		}
@@ -199,7 +199,7 @@ public abstract class Entity implements Serializable {
 	// moves down by a small amount
 	private void fallDy(float dy) {
 		hitbox.incrY(dy);
-		ArrayList<Platform> colliding = TerrainManager.getCollisions(this);
+		ArrayList<Platform> colliding = TerrainManager.getCollisions(this, true);
 		// find the top-most edge out of all the colliding platforms
 		float topMost = Float.MAX_VALUE;
 		for (Platform p : colliding) {
@@ -212,7 +212,7 @@ public abstract class Entity implements Serializable {
 			platform.onCollisionDown(this);
 		}
 
-		ArrayList<Platform> collidingNotSolid = TerrainManager.getCollisionsUnsolid(this);
+		ArrayList<Platform> collidingNotSolid = TerrainManager.getCollisions(this, false);
 		for (Platform p : collidingNotSolid) {
 			p.onCollisionDown(this);
 		}
@@ -221,7 +221,7 @@ public abstract class Entity implements Serializable {
 	// moves left by a small amount
 	private void moveLeftDx(float dx) {
 		hitbox.decrX(dx);
-		ArrayList<Platform> colliding = TerrainManager.getCollisions(this);
+		ArrayList<Platform> colliding = TerrainManager.getCollisions(this, true);
 		// find the right-most edge out of all the colliding platforms
 		float rightMost = Float.MIN_VALUE;
 		for (Platform platform : colliding) {
@@ -234,16 +234,16 @@ public abstract class Entity implements Serializable {
 			p.onCollisionLeft(this);
 		}
 
-		ArrayList<Platform> collidingNotSolid = TerrainManager.getCollisionsUnsolid(this);
+		ArrayList<Platform> collidingNotSolid = TerrainManager.getCollisions(this, false);
 		for (Platform p : collidingNotSolid) {
 			p.onCollisionLeft(this);
 		}
 	}
-	
+
 	// moves right by a small amount
 	private void moveRightDx(float dx) {
 		hitbox.incrX(dx);
-		ArrayList<Platform> colliding = TerrainManager.getCollisions(this);
+		ArrayList<Platform> colliding = TerrainManager.getCollisions(this, true);
 		// find the left-most edge out of all the colliding platforms
 		float leftMost = Float.MAX_VALUE;
 		for (Platform p : colliding) {
@@ -256,12 +256,12 @@ public abstract class Entity implements Serializable {
 			platform.onCollisionRight(this);
 		}
 
-		ArrayList<Platform> collidingNotSolid = TerrainManager.getCollisionsUnsolid(this);
+		ArrayList<Platform> collidingNotSolid = TerrainManager.getCollisions(this, false);
 		for (Platform p : collidingNotSolid) {
 			p.onCollisionRight(this);
 		}
 	}
-
+	
 	public boolean isIntersecting(Entity e) {
 		return hitbox.isIntersecting(e.hitbox);
 	}

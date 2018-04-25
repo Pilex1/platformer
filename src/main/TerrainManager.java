@@ -18,13 +18,14 @@ import terrain.Chunk;
 import terrain.GuidePlatform;
 import terrain.GuideRemovalPlatform;
 import terrain.Platform;
+import util.Rectangle;
 
 public class TerrainManager {
 
 	public static float Floor = 10000;
 
 	private static Chunk[] chunks;
-	
+
 	private static String filePath = "terrain.plex";
 
 	public static void loadPlatforms() {
@@ -61,7 +62,6 @@ public class TerrainManager {
 			System.err.println(e);
 		}
 	}
-
 
 	public static void update() {
 		for (Platform p : getActivePlatforms()) {
@@ -138,28 +138,26 @@ public class TerrainManager {
 		return chunks;
 	}
 
-	public static ArrayList<Platform> getCollisionsUnsolid(Entity e) {
+	// solid true - finds collision with solid blocks
+	// solid false - finds collision with non-solid blocks
+	public static ArrayList<Platform> getCollisions(Rectangle r, boolean solid) {
 		ArrayList<Platform> colliding = new ArrayList<>();
 		for (Chunk chunk : getActiveChunks()) {
 			for (Platform platform : chunk.getPlatforms()) {
-				if (platform.isIntersecting(e) && !platform.isSolid()) {
-					colliding.add(platform);
+				if (platform.getHitbox().isIntersecting(r) && platform.isSolid()) {
+					if (solid && platform.isSolid()) {
+						colliding.add(platform);
+					} else if (!solid && !platform.isSolid()) {
+						colliding.add(platform);
+					}
 				}
 			}
 		}
 		return colliding;
 	}
 
-	public static ArrayList<Platform> getCollisions(Entity e) {
-		ArrayList<Platform> colliding = new ArrayList<>();
-		for (Chunk chunk : getActiveChunks()) {
-			for (Platform platform : chunk.getPlatforms()) {
-				if (platform.isIntersecting(e) && platform.isSolid()) {
-					colliding.add(platform);
-				}
-			}
-		}
-		return colliding;
+	public static ArrayList<Platform> getCollisions(Entity e, boolean solid) {
+		return getCollisions(e.getHitbox(), solid);
 	}
 
 	public static void resetBlocks() {
@@ -167,7 +165,7 @@ public class TerrainManager {
 			c.resetBlocks();
 		}
 	}
-	
+
 	public static Checkpoint getActiveCheckpoint() {
 		for (Checkpoint c : getAllCheckpoints()) {
 			if (c.isChecked())

@@ -104,6 +104,10 @@ public class Platform implements Serializable {
 		hitbox.setPos(new PVector(newX, newY));
 		TerrainManager.addPlatform(this);
 	}
+	
+	public void moveTo(PVector p) {
+		moveTo(p.x,p.y);
+	}
 
 	public Entity[] getEntitiesOn() {
 		ArrayList<Entity> entities = new ArrayList<>();

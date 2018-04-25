@@ -101,6 +101,7 @@ public class Sandbox {
 		P.game.textFont(Fonts.LatoLight, 32);
 		P.game.textAlign(PConstants.LEFT, PConstants.TOP);
 		String debug = "";
+		debug += "FPS: " + P.frameRate + "\n";
 		debug += "Pos: " + StringUtil.beautify(EntityManager.getPlayer().getHitbox().getCenter()) + "\n";
 		debug += "Vel: " + StringUtil.beautify(EntityManager.getPlayer().vel) + "\n";
 		debug += "Mouse: " + StringUtil.beautify(getMousePos()) + "\n";
