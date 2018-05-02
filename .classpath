@@ -3,6 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="lib" path="core.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Processing GUI"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ProcessingGUI"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

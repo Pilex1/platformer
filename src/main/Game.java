@@ -1,16 +1,15 @@
 package main;
 
-import core.DynamicGridLayout;
-import core.GameCanvas;
-import core.Layout;
-import processing.core.*;
-import processing.event.KeyEvent;
-import processing.event.MouseEvent;
-import util.Images;
-
 import static main.MainApplet.P;
 
 import components.Button;
+import core.DynamicGridLayout;
+import core.GameCanvas;
+import core.LayoutList;
+import processing.core.PImage;
+import processing.core.PVector;
+import processing.event.MouseEvent;
+import util.Images;
 
 public class Game extends GameCanvas {
 
@@ -29,18 +28,49 @@ public class Game extends GameCanvas {
 	}
 
 	private void loadTitleScreen() {
-		DynamicGridLayout layout = new DynamicGridLayout();
-		layout.setMaxWidth(400);
-		layout.addComponent(new Button("Play", () -> {
-			System.out.println(0);
-			gameState = GameState.Game;
-		}), 0, 0);
-		layout.addComponent(new Button("Instructions", () -> {
-		}), 0, 1);
-		layout.addComponent(new Button("Exit", () -> {
-			P.exit();
-		}), 0, 2);
-		titleScreen = layout;
+
+		LayoutList layoutList = new LayoutList();
+
+		DynamicGridLayout home = new DynamicGridLayout();
+		DynamicGridLayout levelSelect = new DynamicGridLayout();
+		DynamicGridLayout instructions = new DynamicGridLayout();
+
+		{
+			home.setMaxWidth(400);
+			home.addComponent(new Button("Play", () -> {
+				layoutList.setActiveLayout(levelSelect);
+			}), 0, 0);
+			home.addComponent(new Button("Instructions", () -> {
+				layoutList.setActiveLayout(instructions);
+			}), 0, 1);
+			home.addComponent(new Button("Exit", () -> {
+				P.exit();
+			}), 0, 2);
+		}
+
+		{
+			levelSelect.addComponentToCol(new Button("Level 1", () -> {
+				gameState = GameState.Game;
+				layoutList.setActiveLayout(home);
+			}), 0);
+			levelSelect.addComponentToCol(new Button("Level 2", () -> {
+			}), 0);
+			levelSelect.addComponentToCol(new Button("Level 3", () -> {
+			}), 0);
+			levelSelect.addComponentToCol(new Button("Back", () -> {
+				layoutList.setActiveLayout(home);
+			}), 0);
+		}
+
+		{
+
+			instructions.addComponent(new Button("Back", () -> {
+				layoutList.setActiveLayout(home);
+			}), 0, 0);
+		}
+
+		layoutList.addLayouts(home, levelSelect, instructions);
+		titleScreen = layoutList;
 	}
 
 	private void loadGame() {

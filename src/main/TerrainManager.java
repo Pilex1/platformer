@@ -34,19 +34,20 @@ public class TerrainManager {
 			chunks[i] = new Chunk(i);
 		}
 
-		try {
-			ObjectInputStream in = new ObjectInputStream(new FileInputStream(filePath));
-			Object o = in.readObject();
-			while (o != null) {
-				Platform p = (Platform) o;
-				p.onLoad();
-				addPlatform(p);
-				o = in.readObject();
+			try {
+				ObjectInputStream in = new ObjectInputStream(new FileInputStream(filePath));
+				Object o = in.readObject();
+				while (o != null) {
+					Platform p = (Platform) o;
+					p.onLoad();
+					addPlatform(p);
+					o = in.readObject();
+				}
+				in.close();
+			} catch (Exception e) {
+				System.err.println(e);
 			}
-			in.close();
-		} catch (IOException | ClassNotFoundException e) {
-			System.err.println(e);
-		}
+		
 	}
 
 	public static void savePlatforms() {
