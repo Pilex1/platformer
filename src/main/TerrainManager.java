@@ -1,7 +1,5 @@
 package main;
 
-import static main.MainApplet.P;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -12,175 +10,169 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import entities.Entity;
-import processing.core.PVector;
 import terrain.Checkpoint;
-import terrain.Chunk;
-import terrain.GuidePlatform;
-import terrain.GuideRemovalPlatform;
-import terrain.Platform;
+import terrain.Tile;
 import util.Rectangle;
+import util.Vector2i;
 
 public class TerrainManager {
 
-	public static float Floor = 10000;
+	public static final int TILE_SIZE = 50;
 
-	private static Chunk[] chunks;
+	public static final int TILES_X = 256;
+	public static final int TILES_Y = 256;
 
-	private static String filePath = "terrain.plex";
+	public static final float CENTER_X = TILES_X / 2 * TILE_SIZE;
+	public static final float CENTER_Y = TILES_Y / 2 * TILE_SIZE;
 
-	public static void loadPlatforms() {
-		chunks = new Chunk[2000];
-		for (int i = 0; i < chunks.length; i++) {
-			chunks[i] = new Chunk(i);
-		}
+	public static final int UPDATE_RADIUS = Applet.WIDTH / 2 / TILE_SIZE + 16;
 
-			try {
-				ObjectInputStream in = new ObjectInputStream(new FileInputStream(filePath));
-				Object o = in.readObject();
-				while (o != null) {
-					Platform p = (Platform) o;
-					p.onLoad();
-					addPlatform(p);
-					o = in.readObject();
-				}
-				in.close();
-			} catch (Exception e) {
-				System.err.println(e);
-			}
-		
+	private static Tile[][] tiles = new Tile[TILES_X][TILES_Y];
+
+	private static HashSet<Tile> allTiles = new HashSet<>();
+	private static HashSet<Checkpoint> allCheckpoints = new HashSet<>();
+
+	public static void reset() {
+		tiles = new Tile[TILES_X][TILES_Y];
 	}
 
-	public static void savePlatforms() {
-		try {
-			File f = new File(filePath);
-			f.createNewFile();
-			ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(f));
-			for (Platform p : getAllPlatforms()) {
-				out.writeObject(p);
+	public static void addTile(Tile t) {
+		addTile(t, false);
+	}
+
+	public static void addTile(Tile t, boolean overwrite) {
+		int x = (int) t.getHitbox().getX1() / TILE_SIZE;
+		int y = (int) t.getHitbox().getY1() / TILE_SIZE;
+		if (tiles[x][y] == null) {
+			tiles[x][y] = t;
+			allTiles.add(t);
+			t.onLoad();
+		} else {
+			if (overwrite) {
+				allTiles.remove(tiles[x][y]);
+				tiles[x][y] = t;
+				allTiles.add(t);
+				t.onLoad();
 			}
-			out.close();
-		} catch (IOException e) {
-			System.err.println(e);
 		}
+	}
+
+	public static void removePlatform(Tile t) {
+		int x = (int) t.getHitbox().getX1() / TILE_SIZE;
+		int y = (int) t.getHitbox().getY1() / TILE_SIZE;
+		allTiles.remove(tiles[x][y]);
+		tiles[x][y] = null;
+		t.afterRemove();
 	}
 
 	public static void update() {
-		for (Platform p : getActivePlatforms()) {
+		for (Tile p : getActiveTiles()) {
 			p.onUpdate();
 		}
 	}
 
 	public static void render() {
-		for (Platform p : getActivePlatforms()) {
+		for (Tile p : getActiveTiles()) {
 			p.onRender();
 		}
 	}
 
-	public static void addPlatform(Platform p) {
-		float left = p.getLeftBoundary();
-		float right = p.getRightBoundary();
-		int idLeft = (int) (left / Chunk.Width);
-		int idRight = (int) (right / Chunk.Width);
-		for (int i = idLeft; i <= idRight; i++) {
-			chunks[i].addPlatform(p);
-		}
+	public static Tile getTileById(Vector2i v) {
+		return getTileById(v.x,v.y);
+	}
+	public static Tile getTileById(int x, int y) {
+		return tiles[x][y];
 	}
 
-	public static void removePlatform(Platform p) {
-		for (Chunk c : chunks) {
-			c.removePlatform(p);
-		}
+	public static Tile getTileAt(float x, float y) {
+		return tiles[(int) x / TILE_SIZE][(int) y / TILE_SIZE];
+	}
+	
+	public static HashSet<Tile> getAllTiles() {
+		return allTiles;
 	}
 
-	public static Platform[] getAllPlatforms() {
-		HashSet<Platform> platforms = new HashSet<>();
-		for (Chunk chunk : chunks) {
-			platforms.addAll(chunk.getPlatforms());
-		}
-		return platforms.toArray(new Platform[0]);
-	}
+	public static ArrayList<Tile> getActiveTiles() {
 
-	public static Platform[] getActivePlatforms() {
-		ArrayList<Chunk> chunks = getActiveChunks();
-		HashSet<Platform> platforms = new HashSet<>();
-		for (Chunk c : chunks) {
-			platforms.addAll(c.getPlatforms());
-		}
-		return platforms.toArray(new Platform[0]);
-	}
+		ArrayList<Tile> l = new ArrayList<>();
 
-	public static Chunk[] getAllChunks() {
-		return chunks;
-	}
+		int px = (int) EntityManager.getPlayer().getHitbox().getCenterX() / TILE_SIZE;
+		int py = (int) EntityManager.getPlayer().getHitbox().getCenterY() / TILE_SIZE;
 
-	public static Chunk getChunk(int id) {
-		return chunks[id];
-	}
+		int x1 = Math.max(0, px - UPDATE_RADIUS);
+		int x2 = Math.min(tiles.length - 1, px + UPDATE_RADIUS);
+		int y1 = Math.max(0, py - UPDATE_RADIUS);
+		int y2 = Math.min(tiles[0].length - 1, py + UPDATE_RADIUS);
 
-	public static int getPlayerChunk() {
-		return (int) (EntityManager.getPlayer().getHitbox().getCenterX() / Chunk.Width) + 1;
-	}
-
-	public static int getChunkRadius() {
-		return (int) (P.width / 2 / Chunk.Width) + 2;
-	}
-
-	public static ArrayList<Chunk> getActiveChunks() {
-		int chunkCur = getPlayerChunk();
-		int chunkRadius = getChunkRadius();
-		int chunkMin = chunkCur - chunkRadius;
-		chunkMin = Math.max(0, chunkMin);
-		int chunkMax = chunkCur + chunkRadius;
-		chunkMax = Math.min(chunks.length - 1, chunkMax);
-		ArrayList<Chunk> chunks = new ArrayList<>();
-		for (int i = chunkMin; i <= chunkMax; i++) {
-			chunks.add(TerrainManager.chunks[i]);
-		}
-		return chunks;
-	}
-
-	// solid true - finds collision with solid blocks
-	// solid false - finds collision with non-solid blocks
-	public static ArrayList<Platform> getCollisions(Rectangle r, boolean solid) {
-		ArrayList<Platform> colliding = new ArrayList<>();
-		for (Chunk chunk : getActiveChunks()) {
-			for (Platform platform : chunk.getPlatforms()) {
-				if (platform.getHitbox().isIntersecting(r) && platform.isSolid()) {
-					if (solid && platform.isSolid()) {
-						colliding.add(platform);
-					} else if (!solid && !platform.isSolid()) {
-						colliding.add(platform);
-					}
+		for (int i = x1; i <= x2; i++) {
+			for (int j = y1; j <= y2; j++) {
+				if (tiles[i][j] != null) {
+					l.add(tiles[i][j]);
 				}
 			}
 		}
-		return colliding;
-	}
-
-	public static ArrayList<Platform> getCollisions(Entity e, boolean solid) {
-		return getCollisions(e.getHitbox(), solid);
-	}
-
-	public static void resetBlocks() {
-		for (Chunk c : chunks) {
-			c.resetBlocks();
-		}
+		return l;
 	}
 
 	public static Checkpoint getActiveCheckpoint() {
-		for (Checkpoint c : getAllCheckpoints()) {
+		for (Checkpoint c : allCheckpoints) {
 			if (c.isChecked())
 				return c;
 		}
 		return null;
 	}
 
-	public static ArrayList<Checkpoint> getAllCheckpoints() {
-		ArrayList<Checkpoint> checkpoints = new ArrayList<>();
-		for (Platform p : getAllPlatforms()) {
-			if (p instanceof Checkpoint)
-				checkpoints.add((Checkpoint) p);
-		}
-		return checkpoints;
+	public static HashSet<Checkpoint> getAllCheckpoints() {
+		return allCheckpoints;
 	}
+
+	/**
+	 * 
+	 * finds all collisions between the given rectangle and the terrain
+	 * 
+	 * @param r
+	 * @param solid
+	 *            if true, finds all collisions with solid tiles if false, finds all
+	 *            collisions with non-solid tiles
+	 * @return
+	 */
+	public static ArrayList<Tile> getCollisions(Rectangle r, boolean solid) {
+		ArrayList<Tile> colliding = new ArrayList<>();
+
+		int x1 = (int) (r.getX1() / TILE_SIZE);
+		int x2 = (int) (r.getX2() / TILE_SIZE + 0.5);
+		int y1 = (int) (r.getY1() / TILE_SIZE);
+		int y2 = (int) (r.getY2() / TILE_SIZE + 0.5);
+
+		x1 = Math.max(0, x1);
+		x2 = Math.min(tiles.length - 1, x2);
+		y1 = Math.max(0, y1);
+		y2 = Math.min(tiles[0].length - 1, y2);
+
+		for (int i = x1; i <= x2; i++) {
+			for (int j = y1; j <= y2; j++) {
+				Tile t = tiles[i][j];
+				if (t == null)
+					continue;
+				if (t.getHitbox().isIntersecting(r)) {
+					if (solid == t.isSolid()) {
+						colliding.add(t);
+					}
+				}
+			}
+		}
+
+		return colliding;
+	}
+
+	public static ArrayList<Tile> getCollisions(Entity e, boolean solid) {
+		return getCollisions(e.getHitbox(), solid);
+	}
+
+	public static void resetBlocks() {
+		for (Tile t : allTiles) {
+			t.reset();
+		}
+	}
+
 }

@@ -20,11 +20,6 @@ public class VBouncePlatform extends Platform {
 	}
 	
 	@Override
-	public void onLoad() {
-		img = Images.platform_vbounce;
-	}
-	
-	@Override
 	public void onCollisionUp(Entity e) {
 		if (e.getVely() >= 0)
 			return;
@@ -51,6 +46,11 @@ public class VBouncePlatform extends Platform {
 		float vx = e.getVelx();
 		vx *= hBounceStrength;
 		e.setVelx(vx);
+	}
+	
+	@Override
+	public void onRender() {
+		renderImage(Images.VBounce);
 	}
 
 }

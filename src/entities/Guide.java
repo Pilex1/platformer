@@ -14,7 +14,7 @@ public class Guide extends Npc {
 	private static final long serialVersionUID = 1L;
 
 	public Guide() {
-		super(new PVector(550, TerrainManager.Floor), "Guide");
+		super(new PVector(TerrainManager.CENTER_X + 5 * TerrainManager.TILE_SIZE, TerrainManager.CENTER_Y), "Guide");
 		color = Color.LightPurple;
 		conversations.add("ABC");
 		conversations.add("123");

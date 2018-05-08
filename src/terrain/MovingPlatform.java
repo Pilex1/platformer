@@ -1,12 +1,23 @@
 package terrain;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+
 import entities.Entity;
 import main.EntityManager;
 import main.TerrainManager;
 import processing.core.*;
+import util.Images;
 import util.Rectangle;
 
-public class MovingPlatform extends Platform {
+
+/**
+ * LET'S JUST NOT USE THIS
+ * I SPENT LIKE WEEKS WORKING ON THIS AND IT STILL DOESN'T EVEN WORK
+ * @author pilex
+ *
+ */
+public class MovingPlatform extends Entity {
 
 	/**
 	 * 
@@ -19,7 +30,8 @@ public class MovingPlatform extends Platform {
 	private float dy;
 
 	public MovingPlatform(PVector start, PVector end, float speed) {
-		super(start);
+		super(new Rectangle(start, new PVector(TerrainManager.TILE_SIZE, TerrainManager.TILE_SIZE)));
+		
 		if (end.x < start.x) {
 			this.start = end;
 			this.end = start;
@@ -34,11 +46,7 @@ public class MovingPlatform extends Platform {
 		dx = speed * (float) Math.cos(theta);
 		dy = speed * (float) Math.sin(theta);
 
-	}
-
-	public MovingPlatform(String[] arr) {
-		this(new PVector(Float.parseFloat(arr[0]), Float.parseFloat(arr[1])),
-				new PVector(Float.parseFloat(arr[2]), Float.parseFloat(arr[3])), Float.parseFloat(arr[4]));
+		useGravity = false;
 
 	}
 
@@ -53,21 +61,41 @@ public class MovingPlatform extends Platform {
 		// try to see if we can push entities standing next to the platform
 		// if after being pushed, none of the entities are stuck in a tile
 		// then we actually push all the entities
-		// otherwise we leave the entities as they are, and the platform waits
+		// otherwise the platform waits for the
+		// entities to move
 
-		Entity[] activeEntities = EntityManager.getActiveEntities(true);
+		HashSet<Entity> entities = EntityManager.getAllEntities();
+
 		boolean intersecting = false;
-		Rectangle newHitbox = getHitbox().copy();
-		newHitbox.incrX(dx);
-		newHitbox.incrY(dy);
-		for (Entity e : activeEntities) {
+		Rectangle platformHitbox = getHitbox().copy();
+		platformHitbox.incrX(dx);
+		platformHitbox.incrY(dy);
+		for (Entity e : entities) {
 			Rectangle entityHitbox = e.getHitbox().copy();
-			if (newHitbox.isIntersecting(entityHitbox)) {
+			if (platformHitbox.isIntersecting(entityHitbox)) {
+
 				if (dx > 0) {
-					entityHitbox.setX1(newHitbox.getX2());
+					if (entityHitbox.getX1() > platformHitbox.getX1()) {
+						// platform is moving to the right and entity is to the right of platform //
+						// platform
+						entityHitbox.setX1(platformHitbox.getX2());
+					} else {
+						// platform is moving to the right and entity is to the left of platform
+						entityHitbox.setX2(platformHitbox.getX1());
+					}
 				} else {
-					entityHitbox.setX2(newHitbox.getX1());
+					if (entityHitbox.getX1() > platformHitbox.getX1()) {
+						// platform is moving to the left and entity is to the right of platform //
+						// platform
+						entityHitbox.setX1(platformHitbox.getX2());
+					} else {
+						// platform is moving to the left and entity is to the left of platform //
+						// platform
+						entityHitbox.setX2(platformHitbox.getX1());
+
+					}
 				}
+
 				if (TerrainManager.getCollisions(entityHitbox, true).size() > 0) {
 					intersecting = true;
 					break;
@@ -78,46 +106,81 @@ public class MovingPlatform extends Platform {
 			// if we push an entity, it will get stuck, so don't do anything
 			// wait until the entity moves
 		} else {
-
 			// we can push entities without them getting stuck
 
-			// move any entities standing on top in the direction that the platform is
+			// if the platform reaches its boundary, then reverse its direction
+			Rectangle hitbox = getHitbox();
+			if (hitbox.getX1() >= end.x) {
+				dx *= -1;
+				dy *= -1;
+				hitbox.setPos(end);
+			}
+			if (hitbox.getX1() <= start.x) {
+				dx *= -1;
+				dy *= -1;
+				hitbox.setPos(start);
+			}
+
+				// move any entities standing on top in the direction that the platform is
 			// moving
-			Entity[] entitiesOn = getEntitiesOn();
+			ArrayList<Entity> entitiesOn = new ArrayList<>();
+			for (Entity e : EntityManager.getAllEntities()) {
+				if (e == this)
+					continue;
+				if (e.getHitbox().getX2() > getHitbox().getX1() && e.getHitbox().getX1() < getHitbox().getX2()) {
+					if (e.getVely() > 0 && e.getHitbox().getY2() >= getHitbox().getY1()
+							&& e.getHitbox().getY1() <= getHitbox().getY2()) {
+						entitiesOn.add(e);
+					}
+				}
+			}
+
 			for (Entity e : entitiesOn) {
+				e.getHitbox().setY2(getHitbox().getY1());
+				e.setVely(0);
+
 				e.moveRight(dx);
 				e.moveDown(dy);
 			}
 
-			for (Entity e : activeEntities) {
+			for (Entity e : entities) {
 				Rectangle entityHitbox = e.getHitbox();
-				if (newHitbox.isIntersecting(entityHitbox)) {
+				if (platformHitbox.isIntersecting(entityHitbox, false)) {
+
 					if (dx > 0) {
-						entityHitbox.setX1(newHitbox.getX2());
+						if (entityHitbox.getX1() > platformHitbox.getX1()) {
+							// platform is moving to the right and entity is to the right of platform //
+							// platform
+							entityHitbox.setX1(platformHitbox.getX2());
+						} else {
+							// platform is moving to the right and entity is to the left of platform
+							entityHitbox.setX2(platformHitbox.getX1());
+						}
 					} else {
-						entityHitbox.setX2(newHitbox.getX1());
+						if (entityHitbox.getX1() > platformHitbox.getX1()) {
+							// platform is moving to the left and entity is to the right of platform //
+							// platform
+							entityHitbox.setX1(platformHitbox.getX2());
+						} else {
+							// platform is moving to the left and entity is to the left of platform //
+							// platform
+							entityHitbox.setX2(platformHitbox.getX1());
+
+						}
 					}
-					System.out.println("pushing entity");
+
 				}
 			}
 
-			moveTo(newHitbox.topLeft());
-
+			hitbox.incrX(dx);
+			hitbox.incrY(dy);
 		}
 
-		
-		// if the platform reaches its boundary, then reverse its direction
-		Rectangle hitbox = getHitbox();
-		if (hitbox.getX1() >= end.x) {
-			dx *= -1;
-			dy *= -1;
-			hitbox.setPos(end);
-		}
-		if (hitbox.getX1() <= start.x) {
-			dx *= -1;
-			dy *= -1;
-			hitbox.setPos(start);
-		}
+	}
+
+	@Override
+	public void onRender() {
+		renderImage(Images.Platform);
 	}
 
 }

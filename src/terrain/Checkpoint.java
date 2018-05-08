@@ -7,7 +7,7 @@ import main.TerrainManager;
 import processing.core.*;
 import util.*;
 
-public class Checkpoint extends Platform {
+public class Checkpoint extends Tile {
 
 	/**
 	 * 
@@ -28,10 +28,6 @@ public class Checkpoint extends Platform {
 		solid = false;
 	}
 
-	public Checkpoint(String[] arr) {
-		super(arr);
-	}
-	
 	public boolean isChecked() {
 		return checked;
 	}
@@ -60,5 +56,22 @@ public class Checkpoint extends Platform {
 			}
 			checked = true;
 		}
+	}
+
+	@Override
+	public void onLoad() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void reset() {
+		checked=false;
+	}
+
+	@Override
+	public void afterRemove() {
+		// TODO Auto-generated method stub
+		
 	}
 }

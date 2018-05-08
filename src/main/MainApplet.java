@@ -1,10 +1,7 @@
 package main;
 
 import core.GraphicsComponent;
-import core.Layout;
 import processing.core.PVector;
-import processing.event.KeyEvent;
-import processing.event.MouseEvent;
 
 public class MainApplet extends Applet {
 
@@ -27,8 +24,7 @@ public class MainApplet extends Applet {
 	@Override
 	public void dispose() {
 		super.dispose();
-		TerrainManager.savePlatforms();
-		EntityManager.saveEntities();
+		LevelManager.saveCurrentLevel();
 	}
 
 	public PVector getCamera() {

@@ -50,6 +50,7 @@ public class Game extends GameCanvas {
 
 		{
 			levelSelect.addComponentToCol(new Button("Level 1", () -> {
+				LevelManager.setActiveLevel(0);
 				gameState = GameState.Game;
 				layoutList.setActiveLayout(home);
 			}), 0);
@@ -78,11 +79,9 @@ public class Game extends GameCanvas {
 		// satie.loop();
 
 		Images.load();
-		TerrainManager.loadPlatforms();
-		EntityManager.loadEntities();
+		LevelManager.loadAllLevels();
 
-		background = Images.background;
-		background.resize(P.width, P.height);
+		background = Images.Background;
 	}
 
 	private void loadPauseScreen() {

@@ -1,4 +1,4 @@
-package entities;
+package main;
 
 import processing.core.PConstants;
 import processing.core.PVector;
@@ -10,6 +10,7 @@ import terrain.InvisiblePlatform;
 import terrain.MovingPlatform;
 import terrain.PhantomPlatform;
 import terrain.Platform;
+import terrain.Tile;
 import terrain.VBouncePlatform;
 import util.Color;
 import util.Rectangle;
@@ -18,10 +19,13 @@ import util.StringUtil;
 import static main.MainApplet.P;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 
 import core.Fonts;
-import main.EntityManager;
-import main.TerrainManager;
+import logic.AndGate;
+import logic.PortalIntoTheThirdDimension;
+import logic.Sensor;
+import logic.Wire;
 
 public class Sandbox {
 
@@ -30,8 +34,8 @@ public class Sandbox {
 	}
 
 	private static Class<?>[] platformTypes = new Class<?>[] { Platform.class, VBouncePlatform.class,
-			HBouncePlatform.class, InvisiblePlatform.class, PhantomPlatform.class, MovingPlatform.class,
-			Checkpoint.class };
+			HBouncePlatform.class, InvisiblePlatform.class, PhantomPlatform.class, /*MovingPlatform.class,*/
+			Checkpoint.class, Wire.class ,Sensor.class, AndGate.class, PortalIntoTheThirdDimension.class};
 	private static int currentPlatform = 0;
 
 	private static PVector pos1 = null;
@@ -49,34 +53,28 @@ public class Sandbox {
 		// System.out.println(currentAction);
 		PVector mousePos = getMousePos();
 		if (currentAction == Action.Tile1) {
-			pos1 = blockify(mousePos, 10);
+			pos1 = blockify(mousePos, TerrainManager.TILE_SIZE);
 			tile1.getHitbox().setPos(pos1);
-			tile1.getHitbox().setSize(new PVector(50, 50));
+			tile1.getHitbox().setSize(new PVector(TerrainManager.TILE_SIZE, TerrainManager.TILE_SIZE));
 		} else if (currentAction == Action.Size1) {
 			PVector offset = PVector.sub(mousePos, pos1);
 			if (offset.x <= 0) {
 				// mouse to left of guide
-				tile1.getHitbox().setX1(pos1.x + 50);
+				tile1.getHitbox().setX1(pos1.x + TerrainManager.TILE_SIZE);
 			} else {
 				tile1.getHitbox().setX1(pos1.x);
 			}
 			if (offset.y <= 0) {
 				// mouse above guide
-				tile1.getHitbox().setY1(pos1.y + 50);
+				tile1.getHitbox().setY1(pos1.y + TerrainManager.TILE_SIZE);
 			} else {
 				tile1.getHitbox().setY1(pos1.y);
 			}
 
 			PVector newOffset = PVector.sub(mousePos, tile1.getHitbox().topLeft());
-			if (offset.x <= 0) {
-				newOffset.x -= 50;
-			}
-			if (offset.y <= 0) {
-				newOffset.y -= 50;
-			}
-			tile1.getHitbox().setSize(blockifyCeil(newOffset, 50));
+			tile1.getHitbox().setSize(blockifyCeil(newOffset, TerrainManager.TILE_SIZE));
 		} else if (currentAction == Action.Removing) {
-			Platform selected = getSelectedPlatform();
+			Tile selected = getSelectedTile();
 			if (selected == null) {
 				removal.getHitbox().setSize(new PVector(0, 0));
 			} else {
@@ -87,9 +85,9 @@ public class Sandbox {
 				TerrainManager.removePlatform(selected);
 			}
 		} else if (currentAction == Action.Tile2) {
-			pos2 = blockify(mousePos, 10);
+			pos2 = blockify(mousePos, TerrainManager.TILE_SIZE);
 			tile2.getHitbox().setPos(pos2);
-			tile2.getHitbox().setSize(new PVector(50, 50));
+			tile2.getHitbox().setSize(new PVector(TerrainManager.TILE_SIZE, TerrainManager.TILE_SIZE));
 		}
 	}
 
@@ -103,7 +101,7 @@ public class Sandbox {
 		String debug = "";
 		debug += "FPS: " + P.frameRate + "\n";
 		debug += "Pos: " + StringUtil.beautify(EntityManager.getPlayer().getHitbox().getCenter()) + "\n";
-		debug += "Vel: " + StringUtil.beautify(EntityManager.getPlayer().vel) + "\n";
+		debug += "Vel: " + StringUtil.beautify(EntityManager.getPlayer().getVel()) + "\n";
 		debug += "Mouse: " + StringUtil.beautify(getMousePos()) + "\n";
 		if (currentAction == Action.Tile1 || currentAction == Action.Size1 || currentAction == Action.Tile2) {
 			debug += "Tile 1: " + (pos1 != null ? StringUtil.beautify(tile1.getHitbox().topLeft()) : "") + "\n";
@@ -138,13 +136,13 @@ public class Sandbox {
 
 	}
 
-	public static Platform getSelectedPlatform() {
-		Platform[] platforms = TerrainManager.getActivePlatforms();
-		Platform selected = null;
-		for (Platform p : platforms) {
+	public static Tile getSelectedTile() {
+		ArrayList<Tile> tiles = TerrainManager.getActiveTiles();
+		Tile selected = null;
+		for (Tile t : tiles) {
 			PVector mousePos = getMousePos();
-			if (p.getHitbox().inside(mousePos)) {
-				selected = p;
+			if (t.getHitbox().inside(mousePos)) {
+				selected = t;
 				break;
 			}
 		}
@@ -177,9 +175,9 @@ public class Sandbox {
 		return new PVector(x, y);
 	}
 
-	private static Platform createPlatform(Class<?> c, PVector pos) {
+	private static Tile createTile(Class<?> c, PVector pos) {
 		try {
-			return (Platform) c.getConstructor(PVector.class).newInstance(pos);
+			return (Tile) c.getConstructor(PVector.class).newInstance(pos);
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();
@@ -191,13 +189,14 @@ public class Sandbox {
 		if (currentAction == Action.Tile1 && pos1 != null) {
 			if (platformTypes[currentPlatform] == Checkpoint.class) {
 				PVector pos = pos1.copy();
-				pos.y += 50 - (Checkpoint.stickHeight + Checkpoint.flagHeight - Checkpoint.offset);
-				TerrainManager.addPlatform(createPlatform(Checkpoint.class, pos));
+				pos.y += TerrainManager.TILE_SIZE
+						- (Checkpoint.stickHeight + Checkpoint.flagHeight - Checkpoint.offset);
+				TerrainManager.addTile(createTile(Checkpoint.class, pos));
 				pos1 = null;
 			} else if (platformTypes[currentPlatform] == MovingPlatform.class) {
 				size1 = null;
 				tile1.getHitbox().setPos(pos1);
-				tile1.getHitbox().setSize(new PVector(50, 50));
+				tile1.getHitbox().setSize(new PVector(TerrainManager.TILE_SIZE, TerrainManager.TILE_SIZE));
 				currentAction = Action.Tile2;
 			} else {
 				currentAction = Action.Size1;
@@ -206,7 +205,7 @@ public class Sandbox {
 			if (platformTypes[currentPlatform] == MovingPlatform.class) {
 				float speed = 1;
 				MovingPlatform p = new MovingPlatform(pos1, pos2, speed);
-				TerrainManager.addPlatform(p);
+				EntityManager.addEntity(p);
 				pos2 = null;
 				pos1 = null;
 				size1 = null;
@@ -220,13 +219,13 @@ public class Sandbox {
 			if (platformTypes[currentPlatform] != Checkpoint.class
 					&& platformTypes[currentPlatform] != MovingPlatform.class) {
 				Rectangle rect = new Rectangle(tile1.getHitbox().topLeft(), tile1.getHitbox().getSize()).regularise();
-				for (int i = 0; i < rect.getWidth() / 50; i++) {
-					for (int j = 0; j < rect.getHeight() / 50; j++) {
+				for (int i = 0; i < rect.getWidth() / TerrainManager.TILE_SIZE; i++) {
+					for (int j = 0; j < rect.getHeight() / TerrainManager.TILE_SIZE; j++) {
 						PVector pos = rect.topLeft().copy();
-						pos.x += i * 50;
-						pos.y += j * 50;
-						Platform p = createPlatform(platformTypes[currentPlatform], pos);
-						TerrainManager.addPlatform(p);
+						pos.x += i * TerrainManager.TILE_SIZE;
+						pos.y += j * TerrainManager.TILE_SIZE;
+						Tile t = createTile(platformTypes[currentPlatform], pos);
+						TerrainManager.addTile(t);
 					}
 				}
 				pos1 = null;

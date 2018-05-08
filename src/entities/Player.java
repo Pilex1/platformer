@@ -4,9 +4,9 @@ import static main.MainApplet.*;
 
 import core.Fonts;
 import main.EntityManager;
+import main.Sandbox;
 import main.TerrainManager;
 import processing.core.PConstants;
-import processing.core.PImage;
 import processing.core.PVector;
 import terrain.*;
 import util.*;
@@ -28,16 +28,12 @@ public class Player extends Npc {
 
 	private int deaths = 0;
 
-	private PImage img;
-
 	public Player() {
-		super(new PVector(150, TerrainManager.Floor), "");
-		// super(new PVector(5600, game.Floor), "");
+		super(new PVector(), "");
+		hitbox.setPos(new PVector(TerrainManager.CENTER_X, TerrainManager.CENTER_Y - hitbox.getHeight()));
 
-		defaultSpawn = getHitbox().topLeft().copy();
+		defaultSpawn = hitbox.topLeft().copy();
 		color = Color.White;
-
-		img = Images.player;
 	}
 
 	@Override
@@ -49,15 +45,15 @@ public class Player extends Npc {
 			leaveAllTalking();
 		}
 		Sandbox.update();
-		
-	//	System.out.println(EntityManager.getPlayer().getPlatformsStandingOn().size());
+
+		// System.out.println(EntityManager.getPlayer().getPlatformsStandingOn().size());
 	}
 
 	@Override
 	public void onRender() {
 
 		P.game.transparency(128);
-		P.game.image(img, hitbox.topLeft(), P.getCamera());
+		P.game.image(Images.Player, hitbox.topLeft(), P.getCamera());
 
 		P.game.fill(Color.White);
 		P.game.textFont(Fonts.LatoLight, 32);
@@ -80,7 +76,7 @@ public class Player extends Npc {
 		P.game.textFont(Fonts.LatoLight, 24);
 		P.game.textAlign(PConstants.RIGHT, PConstants.BOTTOM);
 		P.game.text("Deaths: " + deaths, P.width - 10, P.height - 10);
-		
+
 		Sandbox.render();
 	}
 
@@ -125,7 +121,7 @@ public class Player extends Npc {
 
 	private void checkRespawning() {
 		// respawning
-		if (hitbox.getCenterY() >= 12000) {
+		if (hitbox.getCenterY() >= TerrainManager.TILE_SIZE * TerrainManager.TILES_Y) {
 			Checkpoint c = TerrainManager.getActiveCheckpoint();
 			if (c == null) {
 				hitbox.setPos(defaultSpawn);

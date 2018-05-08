@@ -1,28 +1,24 @@
 package terrain;
 
+import java.io.Serializable;
+
 import entities.*;
 import processing.core.*;
 import util.*;
 
-public class HBouncePlatform extends Platform {
+public class HBouncePlatform extends Platform implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private float hBounceStrength = 70f;
+	private float hBounceStrength = 50f;
 	private float vBounceStrength = -8f;
-	private float maxVel = -15f;
 
 	public HBouncePlatform(PVector pos) {
 		super(pos);
 	}
 
-	@Override
-	public void onLoad() {
-		img = Images.platform_hbounce;
-	}
-	
 	@Override
 	public void onCollisionLeft(Entity e) {
 		if (e.getVelx() >= 0)
@@ -37,6 +33,11 @@ public class HBouncePlatform extends Platform {
 			return;
 		e.setVelx(-hBounceStrength);
 		e.setVely(vBounceStrength);
+	}
+	
+	@Override
+	public void onRender() {
+		renderImage(Images.HBounce);
 	}
 
 }

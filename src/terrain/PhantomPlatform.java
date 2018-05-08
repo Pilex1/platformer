@@ -2,6 +2,7 @@ package terrain;
 
 import entities.*;
 import processing.core.*;
+import util.Images;
 
 // appears to be a regular block, then disappears when standing on it or jumping and hitting it
 public class PhantomPlatform extends Platform {
@@ -30,8 +31,9 @@ public class PhantomPlatform extends Platform {
 
 	@Override
 	public void onRender() {
-		if (!activated)
-			super.onRender();
+		if (!activated) {
+			renderImage(Images.Platform);
+		}
 	}
 
 	@Override

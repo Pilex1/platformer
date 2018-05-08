@@ -1,5 +1,7 @@
 package entities;
 
+import static main.MainApplet.P;
+
 import java.io.Serializable;
 import java.util.*;
 
@@ -154,120 +156,152 @@ public abstract class Entity implements Serializable {
 	}
 
 	public boolean inAir() {
-		return getPlatformsStandingOn().size() == 0;
+		return getTilesStandingOn().size() == 0;
 	}
 
-	// gets the platforms which the entitiy is standing on
-	public ArrayList<Platform> getPlatformsStandingOn() {
-		hitbox.incrY(epsilon);
-		ArrayList<Platform> colliding = TerrainManager.getCollisions(this, true);
-		hitbox.decrY(epsilon);
+	/**
+	 * gets the platforms which the entity is standing on<br>
+	 * 
+	 * @return
+	 */
+	public ArrayList<Tile> getTilesStandingOn() {
+		ArrayList<Tile> colliding = new ArrayList<>();
+		ArrayList<Tile> tiles = TerrainManager.getActiveTiles();
+		for (Tile t : tiles) {
+			if (getHitbox().getY2() == t.getHitbox().getY1() && getHitbox().getX2() > t.getHitbox().getX1()
+					&& getHitbox().getX1() < t.getHitbox().getX2()) {
+				colliding.add(t);
+			}
+		}
 		return colliding;
 	}
 
-	// gets the friction value of the material that the entity is currently
-	// standing on (or air)
+	/**
+	 * gets the friction value of the tile that the entity is currently standing on
+	 * <br>
+	 * returns the value of airResistance if the entity is not standing on anything
+	 */
 	public float getCurrentFriction() {
-		ArrayList<Platform> platforms = getPlatformsStandingOn();
+		ArrayList<Tile> platforms = getTilesStandingOn();
 		if (platforms.size() == 0)
 			return airResis;
 		return platforms.get(0).getFriction();
 	}
 
-	// moves up by a small amount
+	/**
+	 * moves up by a small amount
+	 * 
+	 * @param dy
+	 */
 	private void jumpDy(float dy) {
 		hitbox.decrY(dy);
-		ArrayList<Platform> colliding = TerrainManager.getCollisions(this, true);
+		ArrayList<Tile> colliding = TerrainManager.getCollisions(this, true);
 		// find the bottom-most edge out of all the colliding platforms
 		float topMost = Float.MIN_VALUE;
-		for (Platform platform : colliding) {
+		for (Tile platform : colliding) {
 			topMost = Math.max(topMost, platform.getHitbox().getY2());
 		}
 		if (topMost != Float.MIN_VALUE) {
 			hitbox.setY1(topMost);
 		}
-		for (Platform p : colliding) {
+		for (Tile p : colliding) {
 			p.onCollisionUp(this);
 		}
 
-		ArrayList<Platform> collidingNotSolid = TerrainManager.getCollisions(this, false);
-		for (Platform p : collidingNotSolid) {
+		ArrayList<Tile> collidingNotSolid = TerrainManager.getCollisions(this, false);
+		for (Tile p : collidingNotSolid) {
 			p.onCollisionUp(this);
 		}
 	}
 
-	// moves down by a small amount
+	/**
+	 * moves down by a small amount
+	 * 
+	 * @param dy
+	 */
 	private void fallDy(float dy) {
 		hitbox.incrY(dy);
-		ArrayList<Platform> colliding = TerrainManager.getCollisions(this, true);
+		ArrayList<Tile> colliding = TerrainManager.getCollisions(this, true);
 		// find the top-most edge out of all the colliding platforms
 		float topMost = Float.MAX_VALUE;
-		for (Platform p : colliding) {
+		for (Tile p : colliding) {
 			topMost = Math.min(topMost, p.getHitbox().getY1());
 		}
 		if (topMost != Float.MAX_VALUE) {
 			hitbox.setY2(topMost);
 		}
-		for (Platform platform : colliding) {
+		for (Tile platform : colliding) {
 			platform.onCollisionDown(this);
 		}
 
-		ArrayList<Platform> collidingNotSolid = TerrainManager.getCollisions(this, false);
-		for (Platform p : collidingNotSolid) {
+		ArrayList<Tile> collidingNotSolid = TerrainManager.getCollisions(this, false);
+		for (Tile p : collidingNotSolid) {
 			p.onCollisionDown(this);
 		}
 	}
 
-	// moves left by a small amount
+	/**
+	 * moves left by a small amount
+	 * 
+	 * @param dx
+	 */
 	private void moveLeftDx(float dx) {
 		hitbox.decrX(dx);
-		ArrayList<Platform> colliding = TerrainManager.getCollisions(this, true);
+		ArrayList<Tile> colliding = TerrainManager.getCollisions(this, true);
 		// find the right-most edge out of all the colliding platforms
 		float rightMost = Float.MIN_VALUE;
-		for (Platform platform : colliding) {
+		for (Tile platform : colliding) {
 			rightMost = Math.max(rightMost, platform.getHitbox().getX2());
 		}
 		if (rightMost != Float.MIN_VALUE) {
 			hitbox.setX1(rightMost);
 		}
-		for (Platform p : colliding) {
+		for (Tile p : colliding) {
 			p.onCollisionLeft(this);
 		}
 
-		ArrayList<Platform> collidingNotSolid = TerrainManager.getCollisions(this, false);
-		for (Platform p : collidingNotSolid) {
+		ArrayList<Tile> collidingNotSolid = TerrainManager.getCollisions(this, false);
+		for (Tile p : collidingNotSolid) {
 			p.onCollisionLeft(this);
 		}
 	}
 
-	// moves right by a small amount
+	/**
+	 * moves right by a small amount
+	 * 
+	 * @param dx
+	 */
 	private void moveRightDx(float dx) {
 		hitbox.incrX(dx);
-		ArrayList<Platform> colliding = TerrainManager.getCollisions(this, true);
+		ArrayList<Tile> colliding = TerrainManager.getCollisions(this, true);
 		// find the left-most edge out of all the colliding platforms
 		float leftMost = Float.MAX_VALUE;
-		for (Platform p : colliding) {
+		for (Tile p : colliding) {
 			leftMost = Math.min(leftMost, p.getHitbox().getX1());
 		}
 		if (leftMost != Float.MAX_VALUE) {
 			hitbox.setX2(leftMost);
 		}
-		for (Platform platform : colliding) {
+		for (Tile platform : colliding) {
 			platform.onCollisionRight(this);
 		}
 
-		ArrayList<Platform> collidingNotSolid = TerrainManager.getCollisions(this, false);
-		for (Platform p : collidingNotSolid) {
+		ArrayList<Tile> collidingNotSolid = TerrainManager.getCollisions(this, false);
+		for (Tile p : collidingNotSolid) {
 			p.onCollisionRight(this);
 		}
 	}
-	
+
 	public boolean isIntersecting(Entity e) {
 		return hitbox.isIntersecting(e.hitbox);
 	}
 
 	public float getDistanceTo(Entity other) {
 		return PVector.dist(hitbox.getCenter(), other.hitbox.getCenter());
+	}
+	
+	public PVector getVel() {
+		return vel;
 	}
 
 	public float getVely() {
@@ -297,6 +331,16 @@ public abstract class Entity implements Serializable {
 	public abstract void onRender();
 
 	protected void onUpdate() {
+	}
+	
+	protected void renderImage(PImage img) {
+		P.game.transparency(128);
+		P.game.image(img, hitbox.topLeft(), P.getCamera());
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + " " + hitbox.topLeft();
 	}
 
 }
