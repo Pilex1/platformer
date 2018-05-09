@@ -3,6 +3,7 @@ package terrain;
 import java.io.Serializable;
 
 import entities.*;
+import main.Images;
 import processing.core.*;
 import util.*;
 

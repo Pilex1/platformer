@@ -2,62 +2,82 @@ package logic;
 
 import java.io.Serializable;
 
+import main.Images;
 import processing.core.PVector;
-import util.Images;
 
-public class AndGate extends LogicTile implements Serializable {
+/**
+ * inputs on two horizontal sides must be on then vertical outputs turn on
+ * 
+ * @author pilex
+ *
+ */
+public class AndGate extends Emitter implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	protected boolean activeLeft, activeRight;
 
 	public AndGate(PVector pos) {
 		super(pos);
 	}
 
-	@Override
-	public void neighbouringUpdate() {
-	}
-	
-	@Override
-	protected boolean isIntermediate() {
-		return true;
-	}
+	// private void changeState(boolean s) {
+	// // System.out.println(0);
+	// active = s;
+	// getNeighbouringWires().forEach(w -> {
+	// w.active = active;
+	// w.updateNetwork();
+	// });
+	// }
 
-	private void changeState(boolean s) {
-		// System.out.println(0);
-		active = s;
-		getNeighbouringWires().forEach(w -> {
-			w.active = active;
-			w.updateNetwork();
-		});
+	@Override
+	public void onRender() {
+		if (active) {
+			renderImage(Images.AndOn);
+		} else if (activeLeft) {
+			renderImage(Images.AndLeft);
+		} else if (activeRight) {
+			renderImage(Images.AndRight);
+		} else {
+			renderImage(Images.AndOff);
+		}
 	}
 
 	@Override
 	public void onUpdate() {
 		int count = 0;
-		for (Wire w : getNeighbouringWires()) {
-			if (w.connectedToActiveEmitter) {
+		for (Connection c : getAdjacentConnections(Direction.LEFT)) {
+			if (c.active) {
 				count++;
+				activeLeft=true;
+			} else {
+				activeLeft=false;
 			}
 		}
- 
-		//System.out.println(count);
-		boolean newState = count >= 2;
-		if (active != newState) {
-			changeState(newState);
+		for (Connection c : getAdjacentConnections(Direction.RIGHT)) {
+			if (c.active) {
+				count++;
+				activeRight=true;
+			} else {
+				activeRight=false;
+			}
+		}
+		boolean newActive = count==2;
+		if (newActive!=active) {
+			active = newActive;
+			getAdjacentConnections().forEach(c->c.updateNetwork());
 		}
 	}
 
 	@Override
-	public void onRender() {
-		renderImage(active ? Images.AndOn : Images.AndOff);
-	}
-
-	public void reset() {
-		// TODO Auto-generated method stub
-
+	protected boolean outputSignal(Direction dir) {
+		if (dir == Direction.LEFT || dir == Direction.RIGHT) {
+			return false;
+		}
+		return active;
 	}
 
 }

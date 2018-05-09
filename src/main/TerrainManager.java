@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import entities.Entity;
+import logic.Direction;
 import terrain.Checkpoint;
 import terrain.Tile;
 import util.Rectangle;
@@ -75,6 +76,21 @@ public class TerrainManager {
 		for (Tile p : getActiveTiles()) {
 			p.onRender();
 		}
+	}
+	
+	public static Tile getTileRelative(Tile t, Direction d) {
+		Vector2i v = t.getTileId();
+		switch (d) {
+		case UP:
+			return getTileById(v.x,v.y-1);
+		case DOWN:
+			return getTileById(v.x,v.y+1);
+		case LEFT:
+			return getTileById(v.x-1,v.y);
+		case RIGHT:
+			return getTileById(v.x+1,v.y);
+		}
+		return null;
 	}
 
 	public static Tile getTileById(Vector2i v) {

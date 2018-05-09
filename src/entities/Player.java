@@ -4,6 +4,7 @@ import static main.MainApplet.*;
 
 import core.Fonts;
 import main.EntityManager;
+import main.Images;
 import main.Sandbox;
 import main.TerrainManager;
 import processing.core.PConstants;

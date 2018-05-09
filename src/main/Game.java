@@ -9,7 +9,6 @@ import core.LayoutList;
 import processing.core.PImage;
 import processing.core.PVector;
 import processing.event.MouseEvent;
-import util.Images;
 
 public class Game extends GameCanvas {
 

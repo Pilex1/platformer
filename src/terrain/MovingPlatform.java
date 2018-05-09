@@ -5,9 +5,9 @@ import java.util.HashSet;
 
 import entities.Entity;
 import main.EntityManager;
+import main.Images;
 import main.TerrainManager;
 import processing.core.*;
-import util.Images;
 import util.Rectangle;
 
 

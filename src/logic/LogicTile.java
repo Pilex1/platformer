@@ -15,7 +15,7 @@ public abstract class LogicTile extends Tile implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	protected boolean active = false;
+	protected boolean active;
 
 	protected LogicTile(PVector pos) {
 		super(pos);
@@ -24,66 +24,81 @@ public abstract class LogicTile extends Tile implements Serializable {
 	public boolean isActive() {
 		return active;
 	}
-	
-	/**
-	 * used to indicate that a logic tile does not emit a signal
-	 * however lets a signal pass through depending on certain conditions
-	 * e.g. AND gate
-	 * @return
-	 */
-	protected boolean isIntermediate() {
-		return false;
-	}
+
 
 	@Override
 	public void onLoad() {
 		neighbouringUpdate();
-		getNeighbouringWires().forEach(w -> {
+		getAdjacentConnections().forEach(w -> {
 			w.neighbouringUpdate();
 		});
 	}
-	
+
 	/**
 	 * this gets called when a neighbouring logic tile is added/removed
 	 */
-	public abstract void neighbouringUpdate();
-
-	@Override
-	public void onUpdate() {
+	public void neighbouringUpdate() {
+		
+	}
+	
+	protected void updateAdjacent() {
+		getAdjacentConnections().forEach(w -> w.updateNetwork());
 	}
 
 	@Override
 	public void afterRemove() {
-		getNeighbouringLogicTiles().forEach(logic -> {
-			logic.neighbouringUpdate();
-		});
+		updateAdjacent();
+	}
+	
+	@Override
+	public void reset() {
 	}
 
-	protected ArrayList<Wire> getNeighbouringWires() {
+	protected ArrayList<Connection> getAdjacentConnections() {
+		return getAdjacentConnections(Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT);
+	}
+
+	protected ArrayList<Connection> getAdjacentConnections(Direction... directions) {
 		Vector2i v = getTileId();
-		ArrayList<Wire> list = new ArrayList<>();
+		ArrayList<Connection> list = new ArrayList<>();
 
 		Tile up = TerrainManager.getTileById(v.x, v.y - 1);
 		Tile right = TerrainManager.getTileById(v.x + 1, v.y);
 		Tile down = TerrainManager.getTileById(v.x, v.y + 1);
 		Tile left = TerrainManager.getTileById(v.x - 1, v.y);
 
-		if (up instanceof Wire) {
-			list.add((Wire) up);
-		}
-		if (right instanceof Wire) {
-			list.add((Wire) right);
-		}
-		if (down instanceof Wire) {
-			list.add((Wire) down);
-		}
-		if (left instanceof Wire) {
-			list.add((Wire) left);
+		for (Direction dir : directions) {
+			switch (dir) {
+			case UP:
+				if (up instanceof Connection) {
+					list.add((Connection) up);
+				}
+				break;
+			case DOWN:
+				if (down instanceof Connection) {
+					list.add((Connection) down);
+				}
+				break;
+			case LEFT:
+				if (left instanceof Connection) {
+					list.add((Connection) left);
+				}
+				break;
+			case RIGHT:
+				if (right instanceof Connection) {
+					list.add((Connection) right);
+				}
+				break;
+			}
 		}
 		return list;
 	}
+	
+	protected ArrayList<LogicTile> getAdjacentLogics(){
+		return getAdjacentLogics(Direction.UP,Direction.DOWN,Direction.LEFT,Direction.RIGHT);
+	}
 
-	protected ArrayList<LogicTile> getNeighbouringLogicTiles() {
+	protected ArrayList<LogicTile> getAdjacentLogics(Direction... directions) {
 		Vector2i v = getTileId();
 		ArrayList<LogicTile> list = new ArrayList<>();
 
@@ -92,17 +107,29 @@ public abstract class LogicTile extends Tile implements Serializable {
 		Tile down = TerrainManager.getTileById(v.x, v.y + 1);
 		Tile left = TerrainManager.getTileById(v.x - 1, v.y);
 
-		if (up instanceof LogicTile) {
-			list.add((LogicTile) up);
-		}
-		if (right instanceof LogicTile) {
-			list.add((LogicTile) right);
-		}
-		if (down instanceof LogicTile) {
-			list.add((LogicTile) down);
-		}
-		if (left instanceof LogicTile) {
-			list.add((LogicTile) left);
+		for (Direction dir : directions) {
+			switch (dir) {
+			case UP:
+				if (up instanceof LogicTile) {
+					list.add((LogicTile) up);
+				}
+				break;
+			case DOWN:
+				if (down instanceof LogicTile) {
+					list.add((LogicTile) down);
+				}
+				break;
+			case LEFT:
+				if (left instanceof LogicTile) {
+					list.add((LogicTile) left);
+				}
+				break;
+			case RIGHT:
+				if (right instanceof LogicTile) {
+					list.add((LogicTile) right);
+				}
+				break;
+			}
 		}
 		return list;
 	}

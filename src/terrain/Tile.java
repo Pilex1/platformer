@@ -106,7 +106,7 @@ public abstract class Tile implements Serializable{
 	}
 	
 	protected void renderImage(PImage img) {
-		P.game.transparency(128);
+		P.game.transparency(256);
 		P.game.image(img, hitbox.topLeft(), P.getCamera());
 	}
 	

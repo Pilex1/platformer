@@ -20,6 +20,6 @@ public abstract class Emitter extends LogicTile implements Serializable{
 		super(pos);
 	}
 	
-	protected abstract boolean outputSignal();
+	protected abstract boolean outputSignal(Direction dir);
 
 }

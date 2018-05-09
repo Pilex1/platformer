@@ -23,6 +23,7 @@ import java.util.ArrayList;
 
 import core.Fonts;
 import logic.AndGate;
+import logic.Inverter;
 import logic.PortalIntoTheThirdDimension;
 import logic.Sensor;
 import logic.Wire;
@@ -35,7 +36,7 @@ public class Sandbox {
 
 	private static Class<?>[] platformTypes = new Class<?>[] { Platform.class, VBouncePlatform.class,
 			HBouncePlatform.class, InvisiblePlatform.class, PhantomPlatform.class, /*MovingPlatform.class,*/
-			Checkpoint.class, Wire.class ,Sensor.class, AndGate.class, PortalIntoTheThirdDimension.class};
+			Checkpoint.class, Wire.class ,Sensor.class, AndGate.class, PortalIntoTheThirdDimension.class, Inverter.class};
 	private static int currentPlatform = 0;
 
 	private static PVector pos1 = null;

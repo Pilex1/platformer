@@ -2,6 +2,7 @@ package terrain;
 
 
 import entities.*;
+import main.Images;
 import processing.core.*;
 import util.*;
 
