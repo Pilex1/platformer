@@ -12,7 +12,13 @@ public class Inverter extends Emitter {
 
 	public Inverter(PVector pos) {
 		super(pos);
-		// TODO Auto-generated constructor stub
+		canRotate=true;
+	}
+	
+	@Override
+	protected boolean canHaveConnection(Direction dir) {
+		if (dir==Direction.LEFT||dir==Direction.RIGHT) return true;
+		return false;
 	}
 
 	@Override

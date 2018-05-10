@@ -20,19 +20,44 @@ public abstract class Connection extends LogicTile {
 	 * indicates whether the wire should be connected to the corresponding direction
 	 * i.e. there is a wire or some other logic component
 	 */
-	protected boolean connections[] = new boolean[4];
+	private boolean connections[] = new boolean[4];
 
 	protected Connection(PVector pos) {
 		super(pos);
-		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * does not take into account the rotation of the tile to properly take into
+	 * account rotation, do hasConnection(dir.add(rotation));
+	 * 
+	 * @param dir
+	 * @return
+	 */
+	protected boolean hasConnection(Direction dir) {
+		return connections[dir.ordinal()];
+	}
+
+	protected void setConnection(Direction dir, boolean b) {
+		connections[dir.ordinal()] = b;
 	}
 
 	protected void updateConnections() {
 		for (Direction dir : Direction.values()) {
-			connections[dir.ordinal()] = TerrainManager.getTileRelative(this, dir) instanceof LogicTile;
+			setConnection(dir, false);
+			Tile t = TerrainManager.getTileRelative(this, dir);
+			if (t instanceof LogicTile) {
+				LogicTile l = (LogicTile) t;
+				if (l.canHaveConnection(dir.opposite().rotateAntiClockwise(l.getRotation()))) {
+					Direction connectionDir = dir.opposite();
+					connectionDir = connectionDir.rotateAntiClockwise(l.getRotation());
+					if (l.canHaveConnection(connectionDir)) {
+						setConnection(dir, true);
+					}
+				}
+			}
 		}
 	}
-	
+
 	@Override
 	public void onUpdate() {
 	}
@@ -46,7 +71,8 @@ public abstract class Connection extends LogicTile {
 		@Override
 		protected void updateConnections() {
 			super.updateConnections();
-			connections[Direction.LEFT.ordinal()] = connections[Direction.RIGHT.ordinal()] = false;
+			setConnection(Direction.LEFT, false);
+			setConnection(Direction.RIGHT, false);
 		}
 
 		@Override
@@ -68,7 +94,8 @@ public abstract class Connection extends LogicTile {
 		@Override
 		protected void updateConnections() {
 			super.updateConnections();
-			connections[Direction.UP.ordinal()] = connections[Direction.DOWN.ordinal()] = false;
+			setConnection(Direction.UP, false);
+			setConnection(Direction.DOWN, false);
 		}
 
 		@Override
@@ -108,31 +135,6 @@ public abstract class Connection extends LogicTile {
 			allConnections.add(this);
 			search.add(this);
 		}
-		/*
-		 * if (horizontal) { Tile left = TerrainManager.getTileById(thisId.x - 1,
-		 * thisId.y); Tile right = TerrainManager.getTileById(thisId.x + 1, thisId.y);
-		 * 
-		 * }
-		 * 
-		 * if (o == Orientation.Horizontal || o == Orientation.Both) { // if on the left
-		 * or the right there is a component, add both
-		 * 
-		 * if ((left instanceof LogicTile) || (right instanceof LogicTile)) {
-		 * 
-		 * if (((LogicTile) t).isIntermediate() && ((LogicTile) t).isActive()) {
-		 * connectedToIntermediate = true; state = true; } else if (t instanceof Wire &&
-		 * !allConnections.contains(t)) { search.add((Wire) t);
-		 * allConnections.add((Wire) t); } else if (t instanceof Emitter) { if
-		 * (((Emitter) t).outputSignal()) { connectedToActiveEmitter = true; state =
-		 * true; } } } }
-		 * 
-		 * if (o == Orientation.Vertical || o == Orientation.Both) { // if on the top or
-		 * bottom there is a component, add both Tile up =
-		 * TerrainManager.getTileById(thisId.x, thisId.y - 1); Tile down =
-		 * TerrainManager.getTileById(thisId.x, thisId.y + 1); if ((up instanceof
-		 * LogicTile) || (down instanceof LogicTile)) { search.add(up);
-		 * search.add(down); } }
-		 */
 
 		while (search.size() > 0) {
 
@@ -145,11 +147,11 @@ public abstract class Connection extends LogicTile {
 
 				// populates the list with neighbouring tiles
 				// note for portals, only the tiles in the given direction are added
-				
+
 				c.updateConnections();
 
 				for (Direction dir : Direction.values()) {
-					if (c.connections[dir.ordinal()]) {
+					if (c.hasConnection(dir)) {
 						SimpleEntry<Direction, LogicTile> entry = new SimpleEntry<>(dir,
 								(LogicTile) TerrainManager.getTileRelative(c, dir));
 						list.add(entry);
@@ -196,7 +198,9 @@ public abstract class Connection extends LogicTile {
 						}
 
 					} else if (t instanceof Emitter) {
-						if (((Emitter) t).outputSignal(dir.opposite())) {
+						Direction emitterDirection = dir.opposite();
+						emitterDirection = emitterDirection.rotateAntiClockwise(t.getRotation());
+						if (((Emitter) t).outputSignal(emitterDirection)) {
 							state = true;
 						}
 					}
@@ -217,6 +221,8 @@ public abstract class Connection extends LogicTile {
 			}
 			w.active = state;
 		}
+
+		updateConnections();
 
 	}
 

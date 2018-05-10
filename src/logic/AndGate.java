@@ -22,16 +22,8 @@ public class AndGate extends Emitter implements Serializable {
 
 	public AndGate(PVector pos) {
 		super(pos);
+		canRotate=true;
 	}
-
-	// private void changeState(boolean s) {
-	// // System.out.println(0);
-	// active = s;
-	// getNeighbouringWires().forEach(w -> {
-	// w.active = active;
-	// w.updateNetwork();
-	// });
-	// }
 
 	@Override
 	public void onRender() {

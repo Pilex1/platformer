@@ -35,8 +35,9 @@ public class Sandbox {
 	}
 
 	private static Class<?>[] platformTypes = new Class<?>[] { Platform.class, VBouncePlatform.class,
-			HBouncePlatform.class, InvisiblePlatform.class, PhantomPlatform.class, /*MovingPlatform.class,*/
-			Checkpoint.class, Wire.class ,Sensor.class, AndGate.class, PortalIntoTheThirdDimension.class, Inverter.class};
+			HBouncePlatform.class, InvisiblePlatform.class, PhantomPlatform.class, /* MovingPlatform.class, */
+			Checkpoint.class, Wire.class, Sensor.class, AndGate.class, PortalIntoTheThirdDimension.class,
+			Inverter.class };
 	private static int currentPlatform = 0;
 
 	private static PVector pos1 = null;
@@ -188,20 +189,42 @@ public class Sandbox {
 
 	public static void onMousePress(int mouseButton) {
 		if (currentAction == Action.Tile1 && pos1 != null) {
-			if (platformTypes[currentPlatform] == Checkpoint.class) {
-				PVector pos = pos1.copy();
-				pos.y += TerrainManager.TILE_SIZE
-						- (Checkpoint.stickHeight + Checkpoint.flagHeight - Checkpoint.offset);
-				TerrainManager.addTile(createTile(Checkpoint.class, pos));
-				pos1 = null;
-			} else if (platformTypes[currentPlatform] == MovingPlatform.class) {
-				size1 = null;
-				tile1.getHitbox().setPos(pos1);
-				tile1.getHitbox().setSize(new PVector(TerrainManager.TILE_SIZE, TerrainManager.TILE_SIZE));
-				currentAction = Action.Tile2;
-			} else {
-				currentAction = Action.Size1;
+			if (mouseButton == PConstants.LEFT) {
+				if (TerrainManager.getTileAt(pos1) == null) {
+					// if we left click an empty tile, start a drag operation
+					// staring from the selected tile
+					// unless we're placing down a Checkpoint,
+					// in which case dragging is disabled and we just place the checkpoint
+
+					if (platformTypes[currentPlatform] == Checkpoint.class) {
+						PVector pos = pos1.copy();
+						pos.y += TerrainManager.TILE_SIZE
+								- (Checkpoint.stickHeight + Checkpoint.flagHeight - Checkpoint.offset);
+						TerrainManager.addTile(createTile(Checkpoint.class, pos));
+						pos1 = null;
+					} else if (platformTypes[currentPlatform] == MovingPlatform.class) {
+
+						// given up on moving platforms for now
+
+						// size1 = null;
+						// tile1.getHitbox().setPos(pos1);
+						// tile1.getHitbox().setSize(new PVector(TerrainManager.TILE_SIZE,
+						// TerrainManager.TILE_SIZE));
+						// currentAction = Action.Tile2;
+
+					} else {
+						currentAction = Action.Size1;
+					}
+				} else {
+					// left clicking a tile that has something there already
+					// rotate the tile
+					TerrainManager.getTileAt(pos1).rotate();
+				}
+
+			} else if (mouseButton == PConstants.RIGHT) {
+				// if we right click on a tile, then we start a drag operation for removing tiles
 			}
+
 		} else if (currentAction == Action.Tile2 && pos2 != null) {
 			if (platformTypes[currentPlatform] == MovingPlatform.class) {
 				float speed = 1;

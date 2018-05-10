@@ -24,7 +24,7 @@ public class Sensor extends Emitter implements Serializable {
 		Entity[] entities = getEntitiesOn();
 		if (prevEntityCount == 0 && entities.length > 0) {
 			active = !active;
-			updateAdjacent();
+			updateAround();
 		}
 		prevEntityCount = entities.length;
 	}
@@ -37,11 +37,6 @@ public class Sensor extends Emitter implements Serializable {
 	@Override
 	protected boolean outputSignal(Direction dir) {
 		return active;
-	}
-
-	@Override
-	public void neighbouringUpdate() {
-
 	}
 
 }

@@ -42,19 +42,19 @@ public class PortalIntoTheThirdDimension extends Wire {
 		P.game.noStroke();
 		P.game.rect(cx - radius, cy - radius, 2 * radius, 2 * radius, P.getCamera());
 		float offset = TerrainManager.TILE_SIZE / 2 - radius;
-		if (connections[Direction.UP.ordinal()]) {
+		if (hasConnection(Direction.UP)) {
 			P.game.fill(vActive ? activeColor : inactiveColor);
 			P.game.rect(cx - radius, cy - TerrainManager.TILE_SIZE / 2, 2 * radius, offset - gap, P.getCamera());
 		}
-		if (connections[Direction.DOWN.ordinal()]) {
+		if (hasConnection(Direction.DOWN)) {
 			P.game.fill(vActive ? activeColor : inactiveColor);
 			P.game.rect(cx - radius, cy + radius + gap, 2 * radius, offset - gap, P.getCamera());
 		}
-		if (connections[Direction.LEFT.ordinal()]) {
+		if (hasConnection(Direction.LEFT)) {
 			P.game.fill(hActive ? activeColor : inactiveColor);
 			P.game.rect(cx - TerrainManager.TILE_SIZE / 2, cy - radius, offset, 2 * radius, P.getCamera());
 		}
-		if (connections[Direction.RIGHT.ordinal()]) {
+		if (hasConnection(Direction.RIGHT)) {
 			P.game.fill(hActive ? activeColor : inactiveColor);
 			P.game.rect(cx + radius, cy - radius, offset, 2 * radius, P.getCamera());
 		}

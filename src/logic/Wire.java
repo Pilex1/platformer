@@ -29,12 +29,6 @@ public class Wire extends Connection implements Serializable {
 		solid = false;
 	}
 
-	@Override
-	public void neighbouringUpdate() {
-		updateNetwork();
-		updateConnections();
-	}
-
 	public void updateNetwork() {
 		updateNetwork(true, true);
 	}
@@ -51,16 +45,16 @@ public class Wire extends Connection implements Serializable {
 		P.game.noStroke();
 		P.game.rect(cx - radius, cy - radius, 2 * radius, 2 * radius, P.getCamera());
 		float offset = TerrainManager.TILE_SIZE / 2 - radius;
-		if (connections[Direction.UP.ordinal()]) {
+		if (hasConnection(Direction.UP)) {
 			P.game.rect(cx - radius, cy - TerrainManager.TILE_SIZE / 2, 2 * radius, offset, P.getCamera());
 		}
-		if (connections[Direction.DOWN.ordinal()]) {
+		if (hasConnection(Direction.DOWN)) {
 			P.game.rect(cx - radius, cy + radius, 2 * radius, offset, P.getCamera());
 		}
-		if (connections[Direction.LEFT.ordinal()]) {
+		if (hasConnection(Direction.LEFT)) {
 			P.game.rect(cx - TerrainManager.TILE_SIZE / 2, cy - radius, offset, 2 * radius, P.getCamera());
 		}
-		if (connections[Direction.RIGHT.ordinal()]) {
+		if (hasConnection(Direction.RIGHT)) {
 			P.game.rect(cx + radius, cy - radius, offset, 2 * radius, P.getCamera());
 		}
 

@@ -121,7 +121,7 @@ public class Game extends GameCanvas {
 		float width, height, x, y;
 		switch (gameState) {
 		case Game:
-			P.image(background, 0, 0);
+			P.game.image(background, 0, 0);
 			TerrainManager.render();
 			EntityManager.render();
 			break;

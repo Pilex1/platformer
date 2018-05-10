@@ -8,10 +8,19 @@ public enum Direction {
 	}
 	
 	public Direction rotateClockwise() {
-		return Direction.values()[(ordinal() + 1) % 4];
+		return rotateClockwise(RIGHT);
 	}
 	
-	public Direction rotateCounterClockwise() {
-		return Direction.values()[(ordinal() + 3) % 4];
+	public Direction rotateAntiClockwise() {
+		return rotateAntiClockwise(RIGHT);
 	}
+	
+	public Direction rotateClockwise(Direction dir) {
+		return Direction.values()[(ordinal()+dir.ordinal())%4];
+	}
+	
+	public Direction rotateAntiClockwise(Direction dir) {
+		return Direction.values()[(ordinal()-dir.ordinal()+4)%4];
+	}
+	
 }

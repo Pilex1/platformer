@@ -11,6 +11,7 @@ import java.util.HashSet;
 
 import entities.Entity;
 import logic.Direction;
+import processing.core.PVector;
 import terrain.Checkpoint;
 import terrain.Tile;
 import util.Rectangle;
@@ -18,12 +19,27 @@ import util.Vector2i;
 
 public class TerrainManager {
 
+	/**
+	 *  size in pixels that the tiles will be rendered onto the screen
+	 */
 	public static final int TILE_SIZE = 50;
 
+	/**
+	 * number of tiles in the x direction in a level
+	 */
 	public static final int TILES_X = 256;
+	/**
+	 * number of tiles in the y direction in a level
+	 */
 	public static final int TILES_Y = 256;
 
+	/**
+	 * x coordinate of the very center of the level
+	 */
 	public static final float CENTER_X = TILES_X / 2 * TILE_SIZE;
+	/**
+	 * y coordinate of the very center of the level
+	 */
 	public static final float CENTER_Y = TILES_Y / 2 * TILE_SIZE;
 
 	public static final int UPDATE_RADIUS = Applet.WIDTH / 2 / TILE_SIZE + 16;
@@ -61,6 +77,8 @@ public class TerrainManager {
 	public static void removePlatform(Tile t) {
 		int x = (int) t.getHitbox().getX1() / TILE_SIZE;
 		int y = (int) t.getHitbox().getY1() / TILE_SIZE;
+		if (tiles[x][y] == null)
+			return;
 		allTiles.remove(tiles[x][y]);
 		tiles[x][y] = null;
 		t.afterRemove();
@@ -77,25 +95,26 @@ public class TerrainManager {
 			p.onRender();
 		}
 	}
-	
+
 	public static Tile getTileRelative(Tile t, Direction d) {
 		Vector2i v = t.getTileId();
 		switch (d) {
 		case UP:
-			return getTileById(v.x,v.y-1);
+			return getTileById(v.x, v.y - 1);
 		case DOWN:
-			return getTileById(v.x,v.y+1);
+			return getTileById(v.x, v.y + 1);
 		case LEFT:
-			return getTileById(v.x-1,v.y);
+			return getTileById(v.x - 1, v.y);
 		case RIGHT:
-			return getTileById(v.x+1,v.y);
+			return getTileById(v.x + 1, v.y);
 		}
 		return null;
 	}
 
 	public static Tile getTileById(Vector2i v) {
-		return getTileById(v.x,v.y);
+		return getTileById(v.x, v.y);
 	}
+
 	public static Tile getTileById(int x, int y) {
 		return tiles[x][y];
 	}
@@ -103,7 +122,11 @@ public class TerrainManager {
 	public static Tile getTileAt(float x, float y) {
 		return tiles[(int) x / TILE_SIZE][(int) y / TILE_SIZE];
 	}
-	
+
+	public static Tile getTileAt(PVector v) {
+		return getTileAt(v.x, v.y);
+	}
+
 	public static HashSet<Tile> getAllTiles() {
 		return allTiles;
 	}
