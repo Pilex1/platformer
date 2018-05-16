@@ -1,11 +1,5 @@
 package main;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -20,7 +14,7 @@ import util.Vector2i;
 public class TerrainManager {
 
 	/**
-	 *  size in pixels that the tiles will be rendered onto the screen
+	 * size in pixels that the tiles will be rendered onto the screen
 	 */
 	public static final int TILE_SIZE = 50;
 
@@ -51,6 +45,8 @@ public class TerrainManager {
 
 	public static void reset() {
 		tiles = new Tile[TILES_X][TILES_Y];
+		allTiles.clear();
+		allCheckpoints.clear();
 	}
 
 	public static void addTile(Tile t) {
@@ -60,26 +56,27 @@ public class TerrainManager {
 	public static void addTile(Tile t, boolean overwrite) {
 		int x = (int) t.getHitbox().getX1() / TILE_SIZE;
 		int y = (int) t.getHitbox().getY1() / TILE_SIZE;
-		if (tiles[x][y] == null) {
-			tiles[x][y] = t;
-			allTiles.add(t);
-			t.onLoad();
-		} else {
-			if (overwrite) {
-				allTiles.remove(tiles[x][y]);
-				tiles[x][y] = t;
-				allTiles.add(t);
-				t.onLoad();
-			}
+		if (tiles[x][y] != null && !overwrite)
+			return;
+		if (overwrite) {
+			allTiles.remove(tiles[x][y]);
 		}
+		if (t instanceof Checkpoint) {
+			allCheckpoints.add((Checkpoint) t);
+		}
+		tiles[x][y] = t;
+		allTiles.add(t);
+		t.onLoad();
 	}
 
 	public static void removePlatform(Tile t) {
 		int x = (int) t.getHitbox().getX1() / TILE_SIZE;
 		int y = (int) t.getHitbox().getY1() / TILE_SIZE;
-		if (tiles[x][y] == null)
+		if (tiles[x][y] == null) {
 			return;
+		}
 		allTiles.remove(tiles[x][y]);
+		allCheckpoints.remove(t);
 		tiles[x][y] = null;
 		t.afterRemove();
 	}
@@ -97,16 +94,20 @@ public class TerrainManager {
 	}
 
 	public static Tile getTileRelative(Tile t, Direction d) {
+		return getTileRelative(t, d,1);
+	}
+	
+	public static Tile getTileRelative(Tile t, Direction d, int r) {
 		Vector2i v = t.getTileId();
 		switch (d) {
 		case UP:
-			return getTileById(v.x, v.y - 1);
+			return getTileById(v.x, v.y - r);
 		case DOWN:
-			return getTileById(v.x, v.y + 1);
+			return getTileById(v.x, v.y + r);
 		case LEFT:
-			return getTileById(v.x - 1, v.y);
+			return getTileById(v.x - r, v.y);
 		case RIGHT:
-			return getTileById(v.x + 1, v.y);
+			return getTileById(v.x + r, v.y);
 		}
 		return null;
 	}
@@ -167,7 +168,7 @@ public class TerrainManager {
 
 	/**
 	 * 
-	 * finds all collisions between the given rectangle and the terrain
+	 * finds all collisions between the given entity and the terrain
 	 * 
 	 * @param r
 	 * @param solid
@@ -175,7 +176,53 @@ public class TerrainManager {
 	 *            collisions with non-solid tiles
 	 * @return
 	 */
+	public static ArrayList<Tile> getCollisions(Entity e, boolean solid) {
+		return getCollisions(e.getHitbox(), solid, false);
+	}
+
+	/**
+	 * 
+	 * finds all collisions between the given entity and the terrain
+	 * 
+	 * @param r
+	 * @param solid
+	 *            if true, finds all collisions with solid tiles if false, finds all
+	 *            collisions with non-solid tiles
+	 * @return
+	 */
+	public static ArrayList<Tile> getCollisions(Entity e, boolean solid, boolean countEdges) {
+		return getCollisions(e.getHitbox(), solid, countEdges);
+	}
+
+	/**
+	 * 
+	 * finds all collisions between the given rectangle and the terrain
+	 * 
+	 * @param r
+	 * @param solid
+	 *            if true, finds all collisions with solid tiles if false, finds all
+	 *            collisions with non-solid tiles
+	 * @param countEdges
+	 *            if true also counts if the tile is directly adjacent to the entity
+	 * @return
+	 */
 	public static ArrayList<Tile> getCollisions(Rectangle r, boolean solid) {
+		return getCollisions(r, solid, false);
+	}
+
+	/**
+	 * 
+	 * finds all collisions between the given rectangle and the terrain
+	 * 
+	 * @param r
+	 * @param solid
+	 *            if true, finds all collisions with solid tiles if false, finds all
+	 *            collisions with non-solid tiles
+	 * @param countEdges
+	 *            if true also counts if the tile is directly adjacent to the entity
+	 * @return
+	 */
+	public static ArrayList<Tile> getCollisions(Rectangle r, boolean solid, boolean countEdges) {
 		ArrayList<Tile> colliding = new ArrayList<>();
 
 		int x1 = (int) (r.getX1() / TILE_SIZE);
@@ -193,7 +240,7 @@ public class TerrainManager {
 				Tile t = tiles[i][j];
 				if (t == null)
 					continue;
-				if (t.getHitbox().isIntersecting(r)) {
+				if (t.getHitbox().isIntersecting(r, countEdges)) {
 					if (solid == t.isSolid()) {
 						colliding.add(t);
 					}
@@ -202,10 +249,6 @@ public class TerrainManager {
 		}
 
 		return colliding;
-	}
-
-	public static ArrayList<Tile> getCollisions(Entity e, boolean solid) {
-		return getCollisions(e.getHitbox(), solid);
 	}
 
 	public static void resetBlocks() {

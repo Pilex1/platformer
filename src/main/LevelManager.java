@@ -1,6 +1,5 @@
 package main;
 
-import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -63,6 +62,8 @@ public class LevelManager {
 				out.writeObject(e);
 				list.add(e);
 			}
+			
+			out.writeObject(null);
 			out.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -90,7 +91,7 @@ public class LevelManager {
 				TerrainManager.addTile(t);
 			} else if (obj instanceof Entity) {
 				Entity e = (Entity) obj;
-				EntityManager.addEntity(e);
+			//	EntityManager.addEntity(e);
 			} else {
 				throw new RuntimeException();
 			}

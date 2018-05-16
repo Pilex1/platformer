@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import main.TerrainManager;
 import processing.core.PVector;
 import terrain.Tile;
-import util.Vector2i;
 
 public abstract class LogicTile extends Tile implements Serializable {
 
@@ -16,25 +15,23 @@ public abstract class LogicTile extends Tile implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	protected boolean active;
-	
 
-	protected LogicTile(PVector pos) {
+	public LogicTile(PVector pos) {
 		super(pos);
+	}
+	
+	public boolean isActive() {
+		return active;
 	}
 	
 	protected boolean canHaveConnection(Direction dir) {
 		return true;
 	}
-	
 
-	public boolean isActive() {
-		return active;
-	}
-	
 	@Override
 	public void rotate() {
 		super.rotate();
-		if (canRotate) {
+		if (allowRotations) {
 			updateAround();
 		}
 	}
@@ -54,7 +51,7 @@ public abstract class LogicTile extends Tile implements Serializable {
 
 	@Override
 	public void afterRemove() {
-		updateAround();
+		getAdjacentConnections().forEach(w -> w.updateNetwork());
 	}
 	
 	@Override

@@ -3,6 +3,7 @@ package entities;
 import static main.MainApplet.*;
 
 import core.Fonts;
+import core.GameCanvas.GameState;
 import main.EntityManager;
 import main.Images;
 import main.Sandbox;
@@ -81,12 +82,9 @@ public class Player extends Npc {
 		Sandbox.render();
 	}
 
-	public PVector getPosTopLeft() {
-		return new PVector(getHitbox().getCenterX() - P.width / 2, getHitbox().getCenterY() - P.height / 2);
-	}
-
+	
 	private void handleInputs() {
-		useGravity = !flying;
+		calculatePhysics = !flying;
 		if (P.keys['w']) {
 			tutorialMove = true;
 			if (flying) {
@@ -117,6 +115,9 @@ public class Player extends Npc {
 				strafeRight();
 			}
 		}
+		if (P.keyEscape) {
+			P.game.setGameState(GameState.Paused);
+		}
 
 	}
 
@@ -131,6 +132,9 @@ public class Player extends Npc {
 			}
 			setVel(new PVector(0, 0));
 			TerrainManager.resetBlocks();
+			if (c != null) {
+				c.onUpdate();
+			}
 			deaths++;
 		}
 	}

@@ -1,11 +1,5 @@
 package main;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -36,12 +30,12 @@ public class EntityManager {
 	}
 
 	public static void update() {
-		player.update();
-		for (Entity e : entities) {
+		for (Entity e : entities.toArray(new Entity[0])) {
 			if (e == player)
 				continue;
 			e.update();
 		}
+		player.update();
 	}
 
 	public static void render() {
@@ -58,6 +52,10 @@ public class EntityManager {
 	public static void addEntity(Entity e) {
 		entities.add(e);
 		e.onLoad();
+	}
+	
+	public static void removeEntity(Entity e) {
+		entities.remove(e);
 	}
 
 	public static Npc getClosestNpc(Entity entity) {
@@ -98,6 +96,17 @@ public class EntityManager {
 	 */
 	public static HashSet<Entity> getAllEntities() {
 		return entities;
+	}
+	
+	public static ArrayList<Entity> getCollisions(Entity search) {
+		ArrayList<Entity> list = new ArrayList<>();
+		for (Entity e : entities) {
+			if (e==search) continue;
+			if (e.getHitbox().isIntersecting(search.getHitbox(), true)) {
+				list.add(e);
+			}
+		}
+		return list;
 	}
 
 }

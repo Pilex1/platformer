@@ -5,18 +5,17 @@ import java.io.Serializable;
 import entities.*;
 import main.Images;
 import processing.core.*;
-import util.*;
 
-public class HBouncePlatform extends Platform implements Serializable {
+public class HBounce extends Platform implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private float hBounceStrength = 50f;
+	private float hBounceStrength = 35f;
 	private float vBounceStrength = -8f;
 
-	public HBouncePlatform(PVector pos) {
+	public HBounce(PVector pos) {
 		super(pos);
 	}
 

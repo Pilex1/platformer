@@ -4,7 +4,6 @@ import java.io.*;
 
 import main.Images;
 import processing.core.PVector;
-import util.*;
 
 public class Platform extends Tile implements Serializable {
 

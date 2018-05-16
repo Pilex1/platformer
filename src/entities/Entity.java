@@ -17,25 +17,65 @@ public abstract class Entity implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public static float epsilon = 0.1f;
+	public static final float epsilon = 0.1f;
 
-	private static float gravityDy = 0.8f;
-	private static float airResis = 0.8f;
+	/**
+	 * acceleration due to gravity
+	 */
+	public static final float gravity = 0.8f;
+	public static final float verticalDrag = 0.0008f;
+
+	public static final float horizontalDrag = 0.2f;
+
+	/*
+	 * vertical acceleration is calculated as follows: a = g - k * v^2 where g is
+	 * acceleration due to gravity, and k is the drag constant terminal velocity is
+	 * then given by v = sqrt(g/k) (found by setting a = 0)
+	 * 
+	 * IDK HOW TO CALCULATE JUMP HEIGHT AND TIME!!!
+	 * 
+	 * HOW DO U FIND AN EQUATION IN TERMS OF TIME?
+	 */
+
+	/*
+	 * horizontal acceleration is calculated as follows: a = -f * v where f is the
+	 * friction constant of the current block terminal velocity is given by v = s/f,
+	 * where s is the strafing acceleration (a = -f * v + s, and let a = 0)
+	 */
+
+	protected float strafingAcceleration = 1.5f;
+	protected float jumpingAcceleration = 16.5f;
 
 	protected Rectangle hitbox;
 
-	protected boolean useGravity = true;
-	// the maximum velocity at which the entity can move through moving by
-	// itself
-	// note this does not include bounce blocks
-	protected PVector maxVel = new PVector(15, 20);
+	/**
+	 * set this to false if flying
+	 */
+	protected boolean calculatePhysics = true;
+	protected PVector flyingSpeed = new PVector(8f, 8f);
+
 	protected PVector vel = new PVector(0, 0);
-	protected PVector acceleration = new PVector(1.75f, 15);
+	protected PVector acceleration = new PVector(0, 0);
 
 	public Color color;
 
+	/**
+	 * number of frames since the entity was last in the air
+	 */
+	private int lastInAir;
+
+	private boolean moveLeft, moveRight;
+
 	protected Entity(Rectangle hitbox) {
 		this.hitbox = hitbox;
+	}
+
+	public float getStrafingAccel() {
+		return strafingAcceleration;
+	}
+
+	public float getJumpAccel() {
+		return jumpingAcceleration;
 	}
 
 	// called when deserialising
@@ -44,21 +84,50 @@ public abstract class Entity implements Serializable {
 	}
 
 	public final void update() {
-		vel.x *= getCurrentFriction();
-		if (useGravity) {
-			vel.y += gravityDy;
+
+		if (calculatePhysics) {
+			// vel.x = vel.x * getCurrentFriction() * horizontalDrag;
+
+			acceleration.x = -Math.signum(vel.x) * getCurrentFriction() * Math.abs(vel.x);
+			if (moveLeft) {
+				acceleration.x -= strafingAcceleration;
+			}
+			if (moveRight) {
+				acceleration.x += strafingAcceleration;
+			}
+			moveLeft = moveRight = false;
+
+			if (inAir()) {
+				acceleration.y = gravity - Math.signum(vel.y) * verticalDrag * vel.y * vel.y;
+			} else {
+				acceleration.y = 0;
+			}
+
+			vel.x += acceleration.x;
+			vel.y += acceleration.y;
+
+			// System.out.println(acceleration.x);
+
 		} else {
-			vel.y = 0;
+			// vel.y = 0;
 		}
-		vel = MathUtil.clampAbsolute(vel, maxVel);
 
 		moveRight(vel.x);
 		moveDown(vel.y);
 
+		getTilesStandingOn(true).forEach(t -> t.onStanding(this));
+
+		if (!inAir()) {
+			lastInAir++;
+		} else {
+			lastInAir = 0;
+		}
+
 		onUpdate();
+
 	}
 
-	public void moveLeft(float x) {
+	public final void moveLeft(float x) {
 		if (x < 0) {
 			moveRight(-x);
 			return;
@@ -73,7 +142,7 @@ public abstract class Entity implements Serializable {
 		}
 	}
 
-	public void moveRight(float x) {
+	public final void moveRight(float x) {
 		if (x < 0) {
 			moveLeft(-x);
 			return;
@@ -88,7 +157,7 @@ public abstract class Entity implements Serializable {
 		}
 	}
 
-	public void moveUp(float y) {
+	public final void moveUp(float y) {
 		if (y < 0) {
 			moveDown(-y);
 			return;
@@ -103,7 +172,7 @@ public abstract class Entity implements Serializable {
 		}
 	}
 
-	public void moveDown(float y) {
+	public final void moveDown(float y) {
 		if (y < 0) {
 			moveUp(-y);
 			return;
@@ -118,59 +187,75 @@ public abstract class Entity implements Serializable {
 		}
 	}
 
-	public void strafeLeft() {
-		if (vel.x <= -maxVel.x)
-			return;
-		vel.x -= acceleration.x;
-		vel.x = Math.max(vel.x, -maxVel.x);
+	public final void strafeLeft() {
+		for (Tile t : getTilesStandingOn(true)) {
+			if (!t.allowMovement)
+				return;
+		}
+		moveLeft = true;
+		// acceleration.x -=strafingAcceleration;
 	}
 
-	public void strafeRight() {
-		if (vel.x >= maxVel.x)
-			return;
-		vel.x += acceleration.x;
-		vel.x = Math.min(vel.x, maxVel.x);
+	public final void strafeRight() {
+		for (Tile t : getTilesStandingOn(true)) {
+			if (!t.allowMovement)
+				return;
+		}
+		moveRight = true;
+		// vel.x += strafingAcceleration;
+		// acceleration.x += strafingAcceleration;
 	}
 
-	public void jump() {
+	public final void jump() {
 		if (inAir())
 			return;
-		vel.y -= acceleration.y;
-		vel.y = Math.max(vel.y, -maxVel.y);
+		ArrayList<Tile> tiles = getTilesStandingOn(true);
+		for (Tile t : tiles) {
+			if (!t.allowRepeatedJumps && lastInAir <= 1)
+				return;
+			if (!t.allowJumps)
+				return;
+		}
+
+		vel.y -= jumpingAcceleration;
 	}
 
-	public void flyUp() {
-		vel.y = -maxVel.y;
+	public final void flyUp() {
+		vel.y = -flyingSpeed.y;
 	}
 
-	public void flyDown() {
-		vel.y = maxVel.y;
+	public final void flyDown() {
+		vel.y = flyingSpeed.y;
 	}
 
-	public void flyLeft() {
-		vel.x = -maxVel.x;
+	public final void flyLeft() {
+		vel.x = -flyingSpeed.x;
 	}
 
-	public void flyRight() {
-		vel.x = maxVel.x;
+	public final void flyRight() {
+		vel.x = flyingSpeed.x;
 	}
 
-	public boolean inAir() {
-		return getTilesStandingOn().size() == 0;
+	public final boolean inAir() {
+		return getTilesStandingOn(true).size() == 0;
 	}
 
 	/**
 	 * gets the platforms which the entity is standing on<br>
+	 * if solid is true, only gets solid platforms that the entity is standing on if
+	 * solid is false, only gets non-solid platforms the entity is standing on
 	 * 
 	 * @return
 	 */
-	public ArrayList<Tile> getTilesStandingOn() {
+	public ArrayList<Tile> getTilesStandingOn(boolean solid) {
 		ArrayList<Tile> colliding = new ArrayList<>();
 		ArrayList<Tile> tiles = TerrainManager.getActiveTiles();
 		for (Tile t : tiles) {
 			if (getHitbox().getY2() == t.getHitbox().getY1() && getHitbox().getX2() > t.getHitbox().getX1()
 					&& getHitbox().getX1() < t.getHitbox().getX2()) {
-				colliding.add(t);
+				if (t.isSolid() == solid) {
+					colliding.add(t);
+				}
 			}
 		}
 		return colliding;
@@ -179,13 +264,17 @@ public abstract class Entity implements Serializable {
 	/**
 	 * gets the friction value of the tile that the entity is currently standing on
 	 * <br>
-	 * returns the value of airResistance if the entity is not standing on anything
+	 * if the entity is not standing on anything, then it returns horizontal drag
 	 */
 	public float getCurrentFriction() {
-		ArrayList<Tile> platforms = getTilesStandingOn();
+		ArrayList<Tile> platforms = getTilesStandingOn(true);
 		if (platforms.size() == 0)
-			return airResis;
-		return platforms.get(0).getFriction();
+			return horizontalDrag;
+		float min = Float.MAX_VALUE;
+		for (Tile p : platforms) {
+			min = Math.min(min, p.getFriction());
+		}
+		return min;
 	}
 
 	/**
@@ -299,7 +388,16 @@ public abstract class Entity implements Serializable {
 	public float getDistanceTo(Entity other) {
 		return PVector.dist(hitbox.getCenter(), other.hitbox.getCenter());
 	}
-	
+
+	/**
+	 * returns the position of the top left corner of the player hitbox
+	 * 
+	 * @return
+	 */
+	public PVector getPos() {
+		return new PVector(getHitbox().getCenterX() - P.width / 2, getHitbox().getCenterY() - P.height / 2);
+	}
+
 	public PVector getVel() {
 		return vel;
 	}
@@ -332,15 +430,40 @@ public abstract class Entity implements Serializable {
 
 	protected void onUpdate() {
 	}
-	
+
 	protected void renderImage(PImage img) {
 		P.game.transparency(128);
 		P.game.image(img, hitbox.topLeft(), P.getCamera());
 	}
 
+	public PVector getAccel() {
+		return acceleration;
+	}
+
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + " " + hitbox.topLeft();
+	}
+
+	public void onCollisionLeft(Tile t) {
+		vel.x = 0;
+	}
+
+	public void onCollisionRight(Tile t) {
+		vel.x = 0;
+	}
+
+	public void onCollisionUp(Tile t) {
+		vel.y = 0;
+	}
+
+	/**
+	 * called when an entity is moving downwards and collides with this block
+	 * 
+	 * @param e
+	 */
+	public void onCollisionDown(Tile t) {
+		vel.y = 0;
 	}
 
 }

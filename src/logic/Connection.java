@@ -64,6 +64,11 @@ public abstract class Connection extends LogicTile {
 
 	private class PortalVertical extends Wire {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		private PortalVertical(Vector2i id) {
 			super(new PVector(id.x * TerrainManager.TILE_SIZE, id.y * TerrainManager.TILE_SIZE));
 		}
@@ -86,6 +91,11 @@ public abstract class Connection extends LogicTile {
 	}
 
 	private class PortalHorizontal extends Wire {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		private PortalHorizontal(Vector2i id) {
 			super(new PVector(id.x * TerrainManager.TILE_SIZE, id.y * TerrainManager.TILE_SIZE));

@@ -1,16 +1,9 @@
 package logic;
 
 import java.io.Serializable;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.HashSet;
-
 import main.TerrainManager;
 import processing.core.PVector;
-import terrain.Tile;
 import util.Color;
-import util.Vector2i;
-
 import static main.MainApplet.P;
 
 public class Wire extends Connection implements Serializable {

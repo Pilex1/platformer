@@ -4,20 +4,19 @@ package terrain;
 import entities.*;
 import main.Images;
 import processing.core.*;
-import util.*;
 
-public class VBouncePlatform extends Platform {
+public class VBounce extends Platform {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private float hBounceStrength = 1.05f;
-	private float vBounceStrength = -1.5f;
-	private float maxVel = -20f;
+	private float hBounceStrength = 1.2f;
+	private float vBounceStrength = -1.2f;
 
-	public VBouncePlatform(PVector pos) {
+	public VBounce(PVector pos) {
 		super(pos);
+		allowRepeatedJumps=true;
 	}
 	
 	@Override
@@ -41,7 +40,6 @@ public class VBouncePlatform extends Platform {
 
 		float vy = e.getVely();
 		vy *= vBounceStrength;
-		vy = Math.max(vy, maxVel);
 		e.setVely(vy);
 
 		float vx = e.getVelx();

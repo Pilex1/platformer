@@ -22,7 +22,7 @@ public class AndGate extends Emitter implements Serializable {
 
 	public AndGate(PVector pos) {
 		super(pos);
-		canRotate=true;
+		allowRotations=true;
 	}
 
 	@Override

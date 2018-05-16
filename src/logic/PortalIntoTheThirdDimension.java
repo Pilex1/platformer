@@ -4,8 +4,6 @@ import static main.MainApplet.P;
 
 import main.TerrainManager;
 import processing.core.PVector;
-import terrain.Tile;
-import util.Vector2i;
 
 /**
  * a wire that connects horizontal components and vertical components separately

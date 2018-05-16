@@ -4,7 +4,7 @@ import entities.*;
 import processing.core.*;
 
 // invisible until the player jumps and hits the block
-public class InvisiblePlatform extends Platform {
+public class Invisible extends Platform {
 
 	/**
 	 * 
@@ -12,13 +12,22 @@ public class InvisiblePlatform extends Platform {
 	private static final long serialVersionUID = 1L;
 	private boolean activated = false;
 
-	public InvisiblePlatform(PVector pos) {
+	public Invisible(PVector pos) {
 		super(pos);
 		solid = false;
 	}
 
 	@Override
+	public void onLoad() {
+		reset();
+	}
+
+	@Override
 	public void onCollisionUp(Entity e) {
+		// we don't want the tile to activate if the player is standing INSIDE it
+		if (Math.abs(e.getHitbox().getY1() - getHitbox().getY2()) > Entity.epsilon)
+			return;
+
 		activated = true;
 		solid = true;
 		super.onCollisionUp(e);

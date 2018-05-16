@@ -3,26 +3,30 @@ package main;
 import processing.core.PConstants;
 import processing.core.PVector;
 import terrain.Checkpoint;
-import terrain.GuidePlatform;
-import terrain.GuideRemovalPlatform;
-import terrain.HBouncePlatform;
-import terrain.InvisiblePlatform;
-import terrain.MovingPlatform;
-import terrain.PhantomPlatform;
+import terrain.Ice;
+import terrain.HBounce;
+import terrain.Invisible;
+import terrain.LevelFlag;
+import terrain.Moving;
+import terrain.Phantom;
 import terrain.Platform;
+import terrain.Shooter;
 import terrain.Tile;
-import terrain.VBouncePlatform;
+import terrain.VBounce;
 import util.Color;
 import util.Rectangle;
 import util.StringUtil;
 
 import static main.MainApplet.P;
 
+import java.awt.event.KeyEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 import core.Fonts;
+import entities.ShooterProjectile;
 import logic.AndGate;
+import logic.Diode;
 import logic.Inverter;
 import logic.PortalIntoTheThirdDimension;
 import logic.Sensor;
@@ -31,13 +35,63 @@ import logic.Wire;
 public class Sandbox {
 
 	private static enum Action {
-		None, Tile1, Size1, Tile2, Removing
+		None, Tile1, Size1, Tile2, Removing, RemovingSize
+	}
+	
+	private static class GuidePlatform extends Tile {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		private GuidePlatform(PVector pos) {
+			super(pos);
+		}
+		
+		@Override
+		public void onRender() {
+			P.game.strokeWeight(0);
+			P.game.fill(Color.LightGrey.Transparent());
+			P.game.rect(hitbox, P.getCamera());
+		}
+
+
+		@Override
+		public void onUpdate() {
+		}
+	}
+	
+	private static class GuideRemovalPlatform extends Tile {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		private GuideRemovalPlatform(PVector pos) {
+			super(pos);
+		}
+		
+		@Override
+		public void onRender() {
+			P.game.strokeWeight(1);
+			P.game.stroke(Color.Red);
+			P.game.fill(Color.Transparent);
+			P.game.rect(hitbox, P.getCamera());
+		}
+
+		@Override
+		public void onUpdate() {
+			// TODO Auto-generated method stub
+			
+		}
 	}
 
-	private static Class<?>[] platformTypes = new Class<?>[] { Platform.class, VBouncePlatform.class,
-			HBouncePlatform.class, InvisiblePlatform.class, PhantomPlatform.class, /* MovingPlatform.class, */
-			Checkpoint.class, Wire.class, Sensor.class, AndGate.class, PortalIntoTheThirdDimension.class,
-			Inverter.class };
+	private static Class<?>[] platformTypes = new Class<?>[] { Platform.class, VBounce.class,
+			HBounce.class, Ice.class,Invisible.class, Phantom.class, Shooter.class,/* Moving.class, */
+			Checkpoint.class,LevelFlag.class, Wire.class, Sensor.class, AndGate.class, PortalIntoTheThirdDimension.class,
+			Inverter.class, Diode.class };
 	private static int currentPlatform = 0;
 
 	private static PVector pos1 = null;
@@ -50,6 +104,8 @@ public class Sandbox {
 
 	public static boolean enabled = true;
 	private static Action currentAction = Action.None;
+	
+	private static int frameRate=-1;
 
 	public static void update() {
 		// System.out.println(currentAction);
@@ -101,9 +157,13 @@ public class Sandbox {
 		P.game.textFont(Fonts.LatoLight, 32);
 		P.game.textAlign(PConstants.LEFT, PConstants.TOP);
 		String debug = "";
-		debug += "FPS: " + P.frameRate + "\n";
+		if (P.frameCount%120==0 || frameRate==-1) {
+			frameRate=(int)P.frameRate;
+		}
+		debug += "FPS: " + frameRate+ "\n";
 		debug += "Pos: " + StringUtil.beautify(EntityManager.getPlayer().getHitbox().getCenter()) + "\n";
 		debug += "Vel: " + StringUtil.beautify(EntityManager.getPlayer().getVel()) + "\n";
+		debug+="Acc: " + StringUtil.beautify(EntityManager.getPlayer().getAccel()) + "\n";
 		debug += "Mouse: " + StringUtil.beautify(getMousePos()) + "\n";
 		if (currentAction == Action.Tile1 || currentAction == Action.Size1 || currentAction == Action.Tile2) {
 			debug += "Tile 1: " + (pos1 != null ? StringUtil.beautify(tile1.getHitbox().topLeft()) : "") + "\n";
@@ -198,11 +258,9 @@ public class Sandbox {
 
 					if (platformTypes[currentPlatform] == Checkpoint.class) {
 						PVector pos = pos1.copy();
-						pos.y += TerrainManager.TILE_SIZE
-								- (Checkpoint.stickHeight + Checkpoint.flagHeight - Checkpoint.offset);
 						TerrainManager.addTile(createTile(Checkpoint.class, pos));
 						pos1 = null;
-					} else if (platformTypes[currentPlatform] == MovingPlatform.class) {
+					} else if (platformTypes[currentPlatform] == Moving.class) {
 
 						// given up on moving platforms for now
 
@@ -226,9 +284,9 @@ public class Sandbox {
 			}
 
 		} else if (currentAction == Action.Tile2 && pos2 != null) {
-			if (platformTypes[currentPlatform] == MovingPlatform.class) {
+			if (platformTypes[currentPlatform] == Moving.class) {
 				float speed = 1;
-				MovingPlatform p = new MovingPlatform(pos1, pos2, speed);
+				Moving p = new Moving(pos1, pos2, speed);
 				EntityManager.addEntity(p);
 				pos2 = null;
 				pos1 = null;
@@ -241,7 +299,7 @@ public class Sandbox {
 	public static void onMouseRelease(int mouseButton) {
 		if (currentAction == Action.Size1 && pos1 != null) {
 			if (platformTypes[currentPlatform] != Checkpoint.class
-					&& platformTypes[currentPlatform] != MovingPlatform.class) {
+					&& platformTypes[currentPlatform] != Moving.class) {
 				Rectangle rect = new Rectangle(tile1.getHitbox().topLeft(), tile1.getHitbox().getSize()).regularise();
 				for (int i = 0; i < rect.getWidth() / TerrainManager.TILE_SIZE; i++) {
 					for (int j = 0; j < rect.getHeight() / TerrainManager.TILE_SIZE; j++) {

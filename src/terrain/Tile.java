@@ -18,29 +18,58 @@ import util.Vector2i;
 public abstract class Tile implements Serializable {
 
 	/**
+	 * 
+	 */
+	protected static final long serialVersionUID = 1L;
+
+	/**
 	 * if false, entities will fall through the tile as if it wasn't there
 	 */
 	protected boolean solid = true;
 
-	protected float friction = 0.8f;
+	/**
+	 * higher values of friction correspond with a lower maximum velocity</br>
+	 * having a friction of 1 means that you won't be able to move having a
+	 * friction</br>
+	 * of 0 means you will move indefinitely (think of those old school nintendo
+	 * games with the ice puzzles!)
+	 */
+	protected float friction = Entity.horizontalDrag * 1.05f;
 
 	protected PVector pos;
 	protected Rectangle hitbox;
 
 	protected Direction rotation = Direction.UP;
-	protected boolean canRotate;
+	protected boolean allowRotations;
 
-	protected Tile(PVector pos) {
+	/**
+	 * if entities can jump on this block
+	 */
+	public boolean allowJumps = true;
+
+	/**
+	 * if entites can make repeated jumps on this block</br>
+	 * e.g. true for a vbounceplatform, as we do not want entities to be able to
+	 * bounce higher by jumping when it rebounds
+	 */
+	public boolean allowRepeatedJumps = true;
+
+	/**
+	 * whether entities can move around on this tile
+	 */
+	public boolean allowMovement = true;
+
+	public Tile(PVector pos) {
 		this.pos = pos;
 		hitbox = new Rectangle(pos, new PVector(TerrainManager.TILE_SIZE, TerrainManager.TILE_SIZE));
 	}
-	
-	public Direction getRotation( ) {
+
+	public Direction getRotation() {
 		return rotation;
 	}
 
 	public void rotate() {
-		if (!canRotate)
+		if (!allowRotations)
 			return;
 		rotation = rotation.rotateClockwise();
 	}
@@ -50,15 +79,18 @@ public abstract class Tile implements Serializable {
 	 * functionality e.g. when loading a Wire tile, its neighbouring connections
 	 * must be calculated
 	 */
-	public abstract void onLoad();
+	public void onLoad() {
+	}
 
 	public abstract void onUpdate();
 
 	public abstract void onRender();
 
-	public abstract void afterRemove();
+	public void afterRemove() {
+	}
 
-	public abstract void reset();
+	public void reset() {
+	}
 
 	public boolean isSolid() {
 		return solid;
@@ -76,44 +108,62 @@ public abstract class Tile implements Serializable {
 		return friction;
 	}
 
+	/**
+	 * called when an entity is moving upwards, and collides with this block
+	 * 
+	 * @param e
+	 */
 	public void onCollisionUp(Entity e) {
 		if (!solid)
 			return;
-		e.setVely(0);
+		e.onCollisionUp(this);
 	}
 
+	/**
+	 * called when an entity is moving downwards and collides with this block
+	 * 
+	 * @param e
+	 */
 	public void onCollisionDown(Entity e) {
 		if (!solid)
 			return;
-		e.setVely(0);
+		e.onCollisionDown(this);
 	}
 
+	/**
+	 * called when an entity is moving leftwards and collides with this block
+	 * 
+	 * @param e
+	 */
 	public void onCollisionLeft(Entity e) {
 		if (!solid)
 			return;
-		e.setVelx(0);
+		e.onCollisionLeft(this);
 	}
 
+	/**
+	 * called when an entity is moving rightwards and collides with this block
+	 * 
+	 * @param e
+	 */
 	public void onCollisionRight(Entity e) {
 		if (!solid)
 			return;
-		e.setVelx(0);
+		e.onCollisionRight(this);
 	}
-
-	public void moveTo(float newX, float newY) {
-		TerrainManager.removePlatform(this);
-		hitbox.setPos(new PVector(newX, newY));
-		TerrainManager.addTile(this);
-	}
-
-	public void moveTo(PVector p) {
-		moveTo(p.x, p.y);
+	
+	/**
+	 * called when an entity is standing on the block
+	 * @param e
+	 */
+	public void onStanding(Entity e) {
+		
 	}
 
 	public Entity[] getEntitiesOn() {
 		ArrayList<Entity> entities = new ArrayList<>();
 		for (Entity e : EntityManager.getAllEntities()) {
-			if (e.getTilesStandingOn().contains(this)) {
+			if (e.getTilesStandingOn(true).contains(this)) {
 				entities.add(e);
 			}
 		}
@@ -121,6 +171,10 @@ public abstract class Tile implements Serializable {
 	}
 
 	protected void renderImage(PImage img) {
+		renderImage(img, new PVector());
+	}
+	
+	protected void renderImage(PImage img, PVector offset) {
 		P.game.transparency(256);
 		float rotationAmt = 0;
 		switch (rotation) {
@@ -138,7 +192,7 @@ public abstract class Tile implements Serializable {
 			break;
 		}
 
-		P.game.image(img, hitbox.topLeft(), rotationAmt, P.getCamera());
+		P.game.image(img, hitbox.topLeft().sub(offset), rotationAmt, P.getCamera());
 	}
 
 	@Override

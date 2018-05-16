@@ -12,12 +12,12 @@ import util.Rectangle;
 
 
 /**
- * LET'S JUST NOT USE THIS
- * I SPENT LIKE WEEKS WORKING ON THIS AND IT STILL DOESN'T EVEN WORK
+ * NOT USED IN THE GAME
+ * TOO HARD TO IMPLEMENT PROPERLY
  * @author pilex
  *
  */
-public class MovingPlatform extends Entity {
+public class Moving extends Entity {
 
 	/**
 	 * 
@@ -29,7 +29,7 @@ public class MovingPlatform extends Entity {
 	private float dx;
 	private float dy;
 
-	public MovingPlatform(PVector start, PVector end, float speed) {
+	public Moving(PVector start, PVector end, float speed) {
 		super(new Rectangle(start, new PVector(TerrainManager.TILE_SIZE, TerrainManager.TILE_SIZE)));
 		
 		if (end.x < start.x) {
@@ -46,7 +46,7 @@ public class MovingPlatform extends Entity {
 		dx = speed * (float) Math.cos(theta);
 		dy = speed * (float) Math.sin(theta);
 
-		useGravity = false;
+		calculatePhysics = false;
 
 	}
 
