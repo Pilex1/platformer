@@ -30,6 +30,12 @@ public abstract class Connection extends LogicTile {
 	public void onLoad() {
 		updateAround();
 	}
+	
+	@Override
+	protected void updateAround() {
+		updateNetwork();
+		super.updateAround();
+	}
 
 	/**
 	 * does not take into account the rotation of the tile to properly take into
@@ -166,6 +172,7 @@ public abstract class Connection extends LogicTile {
 				allConnections.add(new PortalVertical(getTileId()));
 				search.add(new PortalVertical(getTileId()));
 			}
+			allConnections.add(this);
 		} else {
 			search.add(this);
 		}
@@ -174,6 +181,8 @@ public abstract class Connection extends LogicTile {
 		while (search.size() > 0) {
 
 			for (Connection c : search.toArray(new Connection[0])) {
+				
+				System.out.println(c);
 
 				/**
 				 * contains the neighbouring tiles to the block

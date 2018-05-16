@@ -34,7 +34,6 @@ public class Interface extends Drain {
 			Tile t = TerrainManager.getTileRelative(this, rotation.rotateClockwise(), i);
 			if (t instanceof InterfacePlatform) {
 				InterfacePlatform plat = (InterfacePlatform) t;
-				plat.state = active;
 				plat.solid = active;
 				
 			}
@@ -54,8 +53,6 @@ public class Interface extends Drain {
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-
-		private boolean state;
 
 		public InterfacePlatform(PVector pos) {
 			super(pos);

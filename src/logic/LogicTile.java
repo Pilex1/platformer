@@ -20,6 +20,11 @@ public abstract class LogicTile extends Tile implements Serializable {
 		super(pos);
 	}
 	
+	@Override
+	public void onLoad() {
+		updateAround();
+	}
+	
 	public boolean isActive() {
 		return active;
 	}
@@ -37,9 +42,6 @@ public abstract class LogicTile extends Tile implements Serializable {
 	}
 
 	protected void updateAround() {
-		if (this instanceof Connection) {
-			((Connection)this).updateNetwork();
-		}
 		getAdjacentConnections().forEach(w -> w.updateNetwork());
 	}
 
