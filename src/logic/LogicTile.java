@@ -36,12 +36,6 @@ public abstract class LogicTile extends Tile implements Serializable {
 		}
 	}
 
-
-	@Override
-	public void onLoad() {
-		updateAround();
-	}
-
 	protected void updateAround() {
 		if (this instanceof Connection) {
 			((Connection)this).updateNetwork();

@@ -26,6 +26,11 @@ public abstract class Connection extends LogicTile {
 		super(pos);
 	}
 
+	@Override
+	public void onLoad() {
+		updateAround();
+	}
+
 	/**
 	 * does not take into account the rotation of the tile to properly take into
 	 * account rotation, do hasConnection(dir.add(rotation));
@@ -79,13 +84,23 @@ public abstract class Connection extends LogicTile {
 			setConnection(Direction.LEFT, false);
 			setConnection(Direction.RIGHT, false);
 		}
+		
+		@Override
+		public int hashCode() {
+			return pos.hashCode();
+		}
 
 		@Override
 		public boolean equals(Object obj) {
-			if (!(obj instanceof PortalVertical))
-				return false;
-			PortalVertical p = (PortalVertical) obj;
-			return p.pos.equals(pos);
+			if (obj instanceof PortalIntoTheThirdDimension) {
+				PortalIntoTheThirdDimension p = (PortalIntoTheThirdDimension) obj;
+				return p.pos.equals(pos);
+			}
+			if (obj instanceof PortalVertical) {
+				PortalVertical p = (PortalVertical) obj;
+				return p.pos.equals(pos);
+			}
+			return false;
 		}
 
 	}
@@ -109,11 +124,21 @@ public abstract class Connection extends LogicTile {
 		}
 
 		@Override
+		public int hashCode() {
+			return pos.hashCode();
+		}
+		
+		@Override
 		public boolean equals(Object obj) {
-			if (!(obj instanceof PortalHorizontal))
-				return false;
-			PortalHorizontal p = (PortalHorizontal) obj;
-			return p.pos.equals(pos);
+			if (obj instanceof PortalIntoTheThirdDimension) {
+				PortalIntoTheThirdDimension p = (PortalIntoTheThirdDimension) obj;
+				return p.pos.equals(pos);
+			}
+			if (obj instanceof PortalHorizontal) {
+				PortalHorizontal p = (PortalHorizontal) obj;
+				return p.pos.equals(pos);
+			}
+			return false;
 		}
 
 	}
@@ -142,9 +167,9 @@ public abstract class Connection extends LogicTile {
 				search.add(new PortalVertical(getTileId()));
 			}
 		} else {
-			allConnections.add(this);
 			search.add(this);
 		}
+		allConnections.add(this);
 
 		while (search.size() > 0) {
 
@@ -162,9 +187,12 @@ public abstract class Connection extends LogicTile {
 
 				for (Direction dir : Direction.values()) {
 					if (c.hasConnection(dir)) {
-						SimpleEntry<Direction, LogicTile> entry = new SimpleEntry<>(dir,
-								(LogicTile) TerrainManager.getTileRelative(c, dir));
-						list.add(entry);
+						LogicTile logic = (LogicTile) TerrainManager.getTileRelative(c, dir);
+						if (!allConnections.contains(logic)) {
+							SimpleEntry<Direction, LogicTile> entry = new SimpleEntry<>(dir, logic);
+							list.add(entry);
+						}
+
 					}
 				}
 
@@ -187,25 +215,25 @@ public abstract class Connection extends LogicTile {
 
 						PortalHorizontal ph = new PortalHorizontal(id_t);
 						PortalVertical pv = new PortalVertical(id_t);
+						boolean added=false;
 						if ((left instanceof LogicTile && allConnections.contains(left))
 								|| (right instanceof LogicTile && allConnections.contains(right))) {
-							if (!allConnections.contains(ph)) {
-								search.add(ph);
-								allConnections.add(ph);
-							}
+							search.add(ph);
+							allConnections.add(ph);
+							added=true;
 						}
 						if ((up instanceof LogicTile && allConnections.contains(up))
 								|| (down instanceof LogicTile && allConnections.contains(down))) {
-							if (!allConnections.contains(pv)) {
-								search.add(pv);
-								allConnections.add(pv);
-							}
+							search.add(pv);
+							allConnections.add(pv);
+							added=true;
+						}
+						if (added) {
+							allConnections.add((Connection)t);
 						}
 					} else if (t instanceof Connection) {
-						if (!allConnections.contains(t)) {
-							search.add((Connection) t);
-							allConnections.add((Connection) t);
-						}
+						search.add((Connection) t);
+						allConnections.add((Connection) t);
 
 					} else if (t instanceof Emitter) {
 						Direction emitterDirection = dir.opposite();
