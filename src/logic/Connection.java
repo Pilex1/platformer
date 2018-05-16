@@ -221,6 +221,19 @@ public abstract class Connection extends LogicTile {
 						Tile down = TerrainManager.getTileById(id_t.x, id_t.y + 1);
 						Tile left = TerrainManager.getTileById(id_t.x - 1, id_t.y);
 						Tile right = TerrainManager.getTileById(id_t.x + 1, id_t.y);
+						
+						if (up instanceof PortalIntoTheThirdDimension) {
+							up = new PortalVertical(up.getTileId());
+						}
+						if (down instanceof PortalIntoTheThirdDimension) {
+							down = new PortalVertical(down.getTileId());
+						}
+						if (left instanceof PortalIntoTheThirdDimension) {
+							left = new PortalHorizontal(left.getTileId());
+						}
+						if (right instanceof PortalIntoTheThirdDimension) {
+							right = new PortalHorizontal(right.getTileId());
+						}
 
 						PortalHorizontal ph = new PortalHorizontal(id_t);
 						PortalVertical pv = new PortalVertical(id_t);
