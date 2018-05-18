@@ -17,7 +17,9 @@ public class Images {
 	public static PImage DiodeOn, DiodeOff;
 	public static PImage Ice;
 	public static PImage CheckpointOn, CheckpointOff, LevelFlag;
-	public static PImage ShooterOn,ShooterOff,ShooterProjectile;
+	public static PImage ShooterOn, ShooterOff,ShooterProjectile;
+	public static PImage InterfaceOn, InterfaceOff;
+	public static PImage FanOn, FanOff;
 
 	public static void load() {
 		Background = P.loadImage("res/scifi background.png");
@@ -40,9 +42,13 @@ public class Images {
 		CheckpointOn = P.loadImage("res/checkpoint on.png");
 		CheckpointOff = P.loadImage("res/checkpoint off.png");
 		LevelFlag = P.loadImage("res/level flag.png");
-		ShooterOn = P.loadImage("res/shooter on.png");
-		ShooterOff = P.loadImage("res/shooter off.png");
+		ShooterOn= P.loadImage("res/shooter on.png");
+		ShooterOff=P.loadImage("res/shooter off.png");
 		ShooterProjectile=  P.loadImage("res/shooter projectile.png");
+		InterfaceOn = P.loadImage("res/interface on.png");
+		InterfaceOff = P.loadImage("res/interface off.png");
+		FanOn = P.loadImage("res/fan on.png");
+		FanOff = P.loadImage("res/fan off.png");
 		
 		Platform.resize(50, 50);
 		HBounce.resize(50, 50);
@@ -61,6 +67,10 @@ public class Images {
 		ShooterOn.resize(50, 50);
 		ShooterOff.resize(50, 50);
 		ShooterProjectile.resize(20, 20);
+		InterfaceOn.resize(50, 50);
+		InterfaceOff.resize(50, 50);
+		FanOn.resize(50, 50);
+		FanOff.resize(50, 50);
 
 		Player = P.loadImage("res/player.png");
 		Player.resize(20, 40);

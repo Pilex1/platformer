@@ -28,7 +28,7 @@ public class MainApplet extends Applet {
 	}
 
 	public PVector getCamera() {
-		return EntityManager.getPlayer().getPos();
+		return EntityManager.getPlayer().getCameraPos();
 	}
 
 }

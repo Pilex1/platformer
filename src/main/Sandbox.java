@@ -3,7 +3,10 @@ package main;
 import processing.core.PConstants;
 import processing.core.PVector;
 import terrain.Checkpoint;
+import terrain.Fan;
 import terrain.Ice;
+import terrain.Interface;
+import terrain.InterfacePlatform;
 import terrain.HBounce;
 import terrain.Invisible;
 import terrain.LevelFlag;
@@ -24,6 +27,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 import core.Fonts;
+import core.GameCanvas.GameState;
 import entities.ShooterProjectile;
 import logic.AndGate;
 import logic.Diode;
@@ -37,7 +41,7 @@ public class Sandbox {
 	private static enum Action {
 		None, Tile1, Size1, Tile2, Removing, RemovingSize
 	}
-	
+
 	private static class GuidePlatform extends Tile {
 
 		/**
@@ -48,7 +52,7 @@ public class Sandbox {
 		private GuidePlatform(PVector pos) {
 			super(pos);
 		}
-		
+
 		@Override
 		public void onRender() {
 			P.game.strokeWeight(0);
@@ -56,12 +60,11 @@ public class Sandbox {
 			P.game.rect(hitbox, P.getCamera());
 		}
 
-
 		@Override
 		public void onUpdate() {
 		}
 	}
-	
+
 	private static class GuideRemovalPlatform extends Tile {
 
 		/**
@@ -72,7 +75,7 @@ public class Sandbox {
 		private GuideRemovalPlatform(PVector pos) {
 			super(pos);
 		}
-		
+
 		@Override
 		public void onRender() {
 			P.game.strokeWeight(1);
@@ -83,15 +86,13 @@ public class Sandbox {
 
 		@Override
 		public void onUpdate() {
-			// TODO Auto-generated method stub
-			
 		}
 	}
 
-	private static Class<?>[] platformTypes = new Class<?>[] { Platform.class, VBounce.class,
-			HBounce.class, Ice.class,Invisible.class, Phantom.class, Shooter.class,/* Moving.class, */
-			Checkpoint.class,LevelFlag.class, Wire.class, Sensor.class, AndGate.class, PortalIntoTheThirdDimension.class,
-			Inverter.class, Diode.class };
+	private static Class<?>[] platformTypes = new Class<?>[] { Platform.class, VBounce.class, HBounce.class, Ice.class,
+			Invisible.class, Phantom.class, Shooter.class, Interface.class,InterfacePlatform.class, Fan.class,/* Moving.class, */
+			Checkpoint.class, LevelFlag.class, Wire.class, Sensor.class, AndGate.class,
+			PortalIntoTheThirdDimension.class, Inverter.class, Diode.class };
 	private static int currentPlatform = 0;
 
 	private static PVector pos1 = null;
@@ -104,8 +105,8 @@ public class Sandbox {
 
 	public static boolean enabled = true;
 	private static Action currentAction = Action.None;
-	
-	private static int frameRate=-1;
+
+	private static int frameRate = -1;
 
 	public static void update() {
 		// System.out.println(currentAction);
@@ -157,13 +158,13 @@ public class Sandbox {
 		P.game.textFont(Fonts.LatoLight, 32);
 		P.game.textAlign(PConstants.LEFT, PConstants.TOP);
 		String debug = "";
-		if (P.frameCount%120==0 || frameRate==-1) {
-			frameRate=(int)P.frameRate;
+		if (P.frameCount % 120 == 0 || frameRate == -1) {
+			frameRate = (int) P.frameRate;
 		}
-		debug += "FPS: " + frameRate+ "\n";
+		debug += "FPS: " + frameRate + "\n";
 		debug += "Pos: " + StringUtil.beautify(EntityManager.getPlayer().getHitbox().getCenter()) + "\n";
 		debug += "Vel: " + StringUtil.beautify(EntityManager.getPlayer().getVel()) + "\n";
-		debug+="Acc: " + StringUtil.beautify(EntityManager.getPlayer().getAccel()) + "\n";
+		debug += "Acc: " + StringUtil.beautify(EntityManager.getPlayer().getAccel()) + "\n";
 		debug += "Mouse: " + StringUtil.beautify(getMousePos()) + "\n";
 		if (currentAction == Action.Tile1 || currentAction == Action.Size1 || currentAction == Action.Tile2) {
 			debug += "Tile 1: " + (pos1 != null ? StringUtil.beautify(tile1.getHitbox().topLeft()) : "") + "\n";
@@ -280,7 +281,8 @@ public class Sandbox {
 				}
 
 			} else if (mouseButton == PConstants.RIGHT) {
-				// if we right click on a tile, then we start a drag operation for removing tiles
+				// if we right click on a tile, then we start a drag operation for removing
+				// tiles
 			}
 
 		} else if (currentAction == Action.Tile2 && pos2 != null) {
@@ -298,8 +300,7 @@ public class Sandbox {
 
 	public static void onMouseRelease(int mouseButton) {
 		if (currentAction == Action.Size1 && pos1 != null) {
-			if (platformTypes[currentPlatform] != Checkpoint.class
-					&& platformTypes[currentPlatform] != Moving.class) {
+			if (platformTypes[currentPlatform] != Checkpoint.class && platformTypes[currentPlatform] != Moving.class) {
 				Rectangle rect = new Rectangle(tile1.getHitbox().topLeft(), tile1.getHitbox().getSize()).regularise();
 				for (int i = 0; i < rect.getWidth() / TerrainManager.TILE_SIZE; i++) {
 					for (int j = 0; j < rect.getHeight() / TerrainManager.TILE_SIZE; j++) {
@@ -320,21 +321,20 @@ public class Sandbox {
 	public static void onKeyPress(char key) {
 		if (!enabled)
 			return;
-		if (P.keyEscape) {
-			if (currentAction == Action.Tile1 && size1 != null) {
-				size1 = null;
-			} else {
-				currentAction = Action.None;
-			}
+		if (key == KeyEvent.VK_ESCAPE) {
+			currentAction = Action.None;
+			P.game.allowPausing(true);
 		}
 		if (key == 'f') {
-			EntityManager.getPlayer().toggleFlying();
+			// EntityManager.getPlayer().toggleFlying();
 		}
 		if (key == 'e') {
 			currentAction = Action.Tile1;
+			P.game.allowPausing(false);
 		}
 		if (key == 'r') {
 			currentAction = Action.Removing;
+			P.game.allowPausing(false);
 		}
 	}
 

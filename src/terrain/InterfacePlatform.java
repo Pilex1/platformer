@@ -1,28 +1,24 @@
 package terrain;
 
-import java.io.*;
-
 import main.Images;
 import processing.core.PVector;
 
-public class Platform extends Tile implements Serializable {
+public class InterfacePlatform extends Platform {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public Platform(PVector pos) {
+	public InterfacePlatform(PVector pos) {
 		super(pos);
-	}
-
-	@Override
-	public void onUpdate() {
 	}
 	
 	@Override
 	public void onRender() {
-		renderImage(Images.Platform);
+		if (solid) {
+			renderImage(Images.Platform);
+		}
 	}
 
 }

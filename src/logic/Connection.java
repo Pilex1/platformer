@@ -30,7 +30,7 @@ public abstract class Connection extends LogicTile {
 	public void onLoad() {
 		updateAround();
 	}
-	
+
 	@Override
 	protected void updateAround() {
 		updateNetwork();
@@ -38,8 +38,8 @@ public abstract class Connection extends LogicTile {
 	}
 
 	/**
-	 * does not take into account the rotation of the tile to properly take into
-	 * account rotation, do hasConnection(dir.add(rotation));
+	 * does not take into account the rotation of the tile <br>
+	 * to properly take into account rotation, use <code>hasConnection(dir.rotateClockwise(rotation));</code>
 	 * 
 	 * @param dir
 	 * @return
@@ -90,7 +90,7 @@ public abstract class Connection extends LogicTile {
 			setConnection(Direction.LEFT, false);
 			setConnection(Direction.RIGHT, false);
 		}
-		
+
 		@Override
 		public int hashCode() {
 			return pos.hashCode();
@@ -133,7 +133,7 @@ public abstract class Connection extends LogicTile {
 		public int hashCode() {
 			return pos.hashCode();
 		}
-		
+
 		@Override
 		public boolean equals(Object obj) {
 			if (obj instanceof PortalIntoTheThirdDimension) {
@@ -181,7 +181,7 @@ public abstract class Connection extends LogicTile {
 		while (search.size() > 0) {
 
 			for (Connection c : search.toArray(new Connection[0])) {
-				
+
 				System.out.println(c);
 
 				/**
@@ -221,7 +221,7 @@ public abstract class Connection extends LogicTile {
 						Tile down = TerrainManager.getTileById(id_t.x, id_t.y + 1);
 						Tile left = TerrainManager.getTileById(id_t.x - 1, id_t.y);
 						Tile right = TerrainManager.getTileById(id_t.x + 1, id_t.y);
-						
+
 						if (up instanceof PortalIntoTheThirdDimension) {
 							up = new PortalVertical(up.getTileId());
 						}
@@ -237,21 +237,21 @@ public abstract class Connection extends LogicTile {
 
 						PortalHorizontal ph = new PortalHorizontal(id_t);
 						PortalVertical pv = new PortalVertical(id_t);
-						boolean added=false;
+						boolean added = false;
 						if ((left instanceof LogicTile && allConnections.contains(left))
 								|| (right instanceof LogicTile && allConnections.contains(right))) {
 							search.add(ph);
 							allConnections.add(ph);
-							added=true;
+							added = true;
 						}
 						if ((up instanceof LogicTile && allConnections.contains(up))
 								|| (down instanceof LogicTile && allConnections.contains(down))) {
 							search.add(pv);
 							allConnections.add(pv);
-							added=true;
+							added = true;
 						}
 						if (added) {
-							allConnections.add((Connection)t);
+							allConnections.add((Connection) t);
 						}
 					} else if (t instanceof Connection) {
 						search.add((Connection) t);

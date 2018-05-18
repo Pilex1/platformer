@@ -8,6 +8,7 @@ import entities.Npc;
 import entities.Player;
 import processing.core.PVector;
 import terrain.Platform;
+import util.Rectangle;
 
 public class EntityManager {
 
@@ -107,6 +108,14 @@ public class EntityManager {
 			}
 		}
 		return list;
+	}
+	
+	public static float distBetween(Entity a, Entity b) {
+		return distBetween(a.getHitbox(),b.getHitbox());
+	}
+	
+	public static float distBetween(Rectangle a, Rectangle b) {
+		return a.topLeft().dist(b.topLeft());
 	}
 
 }

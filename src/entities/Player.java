@@ -115,10 +115,6 @@ public class Player extends Npc {
 				strafeRight();
 			}
 		}
-		if (P.keyEscape) {
-			P.game.setGameState(GameState.Paused);
-		}
-
 	}
 
 	private void checkRespawning() {

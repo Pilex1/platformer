@@ -389,13 +389,19 @@ public abstract class Entity implements Serializable {
 		return PVector.dist(hitbox.getCenter(), other.hitbox.getCenter());
 	}
 
+
+	public PVector getCameraPos() {
+		return new PVector(getHitbox().getCenterX() - P.width / 2, getHitbox().getCenterY() - P.height / 2);
+
+	}
+	
 	/**
 	 * returns the position of the top left corner of the player hitbox
 	 * 
 	 * @return
 	 */
 	public PVector getPos() {
-		return new PVector(getHitbox().getCenterX() - P.width / 2, getHitbox().getCenterY() - P.height / 2);
+		return getHitbox().topLeft();
 	}
 
 	public PVector getVel() {
@@ -464,6 +470,22 @@ public abstract class Entity implements Serializable {
 	 */
 	public void onCollisionDown(Tile t) {
 		vel.y = 0;
+	}
+
+	public void increaseVelx(float x) {
+		vel.x += x;
+	}
+
+	public void decreaseVelx(float x) {
+		vel.x -= x;
+	}
+
+	public void increaseVely(float y) {
+		vel.y += y;
+	}
+
+	public void decreaseVely(float y) {
+		vel.y -= y;
 	}
 
 }

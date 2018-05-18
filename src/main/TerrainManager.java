@@ -97,6 +97,13 @@ public class TerrainManager {
 		return getTileRelative(t, d,1);
 	}
 	
+	/**
+	 * 
+	 * @param t
+	 * @param d the absolute direction (e.g. if d is LEFT, this function will always return the tile on the left, no matter the rotation of the current tile
+	 * @param r
+	 * @return
+	 */
 	public static Tile getTileRelative(Tile t, Direction d, int r) {
 		Vector2i v = t.getTileId();
 		switch (d) {

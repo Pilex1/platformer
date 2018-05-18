@@ -7,6 +7,7 @@ import components.Label;
 import core.DynamicGridLayout;
 import core.Fonts;
 import core.GameCanvas;
+import core.Layout;
 import core.LayoutList;
 import processing.core.PImage;
 import processing.core.PVector;
@@ -15,24 +16,18 @@ import util.Color;
 import util.EdgeTuple;
 
 public class Game extends GameCanvas {
+	
+	@Override
+	protected void loadGame() {
+		// satie = new SoundFile(Processing, "Satie.mp3");
+		// satie.loop();
 
-	// private SoundFile satie;
-
-	private PImage background;
-
-	public Game() {
-
-		super();
-
-		loadGame();
-
-		loadTitleScreen();
-		loadPauseScreen();
-
+		Images.load();
+		LevelManager.loadAllLevels();
 	}
 
-	private void loadTitleScreen() {
-
+	@Override
+	protected Layout initTitleScreen() {
 		LayoutList layoutList = new LayoutList();
 
 		DynamicGridLayout home = new DynamicGridLayout();
@@ -66,7 +61,6 @@ public class Game extends GameCanvas {
 
 			home.addComponent(home_main, 0, 0);
 			home.addComponent(home_exit, 0, 1);
-
 		}
 
 		{
@@ -126,7 +120,6 @@ public class Game extends GameCanvas {
 
 		layoutList.addLayouts(home, levelSelect, instructions);
 		layoutList.getLayouts().forEach(l -> l.padding = new EdgeTuple(20));
-		titleScreen = layoutList;
 
 		layoutList.getAllComponents().forEach(gc -> {
 			if (gc instanceof Button) {
@@ -135,29 +128,13 @@ public class Game extends GameCanvas {
 				b.setPadding(btnPadding);
 			}
 		});
+
+		return layoutList;
 	}
 
-	private void loadGame() {
-		// satie = new SoundFile(Processing, "Satie.mp3");
-		// satie.loop();
-
-		Images.load();
-		LevelManager.loadAllLevels();
-
-		background = Images.Background;
-	}
-
-	private void loadPauseScreen() {
-		LayoutList layoutList = new LayoutList() {
-			@Override
-			protected void onUpdate(PVector pos, PVector size) {
-				// TODO Auto-generated method stub
-				super.onUpdate(pos, size);
-				if (P.keyEscape) {
-					setGameState(GameState.Game);
-				}
-			}
-		};
+	@Override
+	protected Layout initPauseScreen() {
+		LayoutList layoutList = new LayoutList();
 		DynamicGridLayout home = new DynamicGridLayout();
 		DynamicGridLayout instructions = new DynamicGridLayout();
 
@@ -182,7 +159,7 @@ public class Game extends GameCanvas {
 			DynamicGridLayout home_exit = new DynamicGridLayout();
 			home_exit.addComponent(new Button("Return to title screen", () -> {
 				LevelManager.saveCurrentLevel();
-				P.game.setGameState(GameState.TitleScreen);
+				P.game.setGameState(GameState.Title);
 			}), 0, 0);
 			home_exit.setMaxSize(maxBtnSize);
 
@@ -223,7 +200,6 @@ public class Game extends GameCanvas {
 
 		layoutList.addLayouts(home, instructions);
 		layoutList.getLayouts().forEach(l -> l.padding = new EdgeTuple(20));
-		pauseScreenOverlay = layoutList;
 
 		layoutList.getAllComponents().forEach(gc -> {
 			if (gc instanceof Button) {
@@ -232,19 +208,60 @@ public class Game extends GameCanvas {
 				b.setPadding(btnPadding);
 			}
 		});
-		layoutList.setBackgroundColorRecursive(Color.Red);
+		layoutList.setBackgroundColorRecursive(new Color(0, 0, 0));
 
+		return layoutList;
+	}
+
+	@Override
+	protected Layout initEndScreen() {
+		DynamicGridLayout end = new DynamicGridLayout();
+
+		PVector maxBtnSize = new PVector(700, 120);
+		EdgeTuple btnPadding = new EdgeTuple(10);
+		PVector maxHeadingSize = new PVector(700, 100);
+		int headingTextSize = 36;
+
+		DynamicGridLayout home_main = new DynamicGridLayout();
+		Label title = new Label("おめでとう!");
+		title.textSize = headingTextSize;
+		title.setMaxSize(maxHeadingSize);
+		title.setFont(Fonts.Japanese);
+		home_main.addComponentToCol(title, 0);
+		home_main.addComponentToCol(new Label("You have completed all the levels and finished the game."), 0);
+
+		DynamicGridLayout home_exit = new DynamicGridLayout();
+		home_exit.addComponent(new Button("Return to title screen", () -> {
+			LevelManager.saveCurrentLevel();
+			P.game.setGameState(GameState.Title);
+		}), 0, 0);
+		home_exit.setMaxSize(maxBtnSize);
+
+		end.addComponent(home_main, 0, 0);
+		end.addComponent(home_exit, 0, 1);
+
+		end.padding = new EdgeTuple(20);
+
+		end.getAllComponents().forEach(gc -> {
+			if (gc instanceof Button) {
+				Button b = (Button) gc;
+				b.setMaxSize(maxBtnSize);
+				b.setPadding(btnPadding);
+			}
+		});
+		
+		return end;
 	}
 
 	@Override
 	protected void updateGame() {
+		P.game.image(Images.Background, new PVector(0,0));
 		TerrainManager.update();
 		EntityManager.update();
 	}
 
 	@Override
 	protected void renderGame() {
-		P.game.image(background, 0, 0);
 		TerrainManager.render();
 		EntityManager.render();
 	}

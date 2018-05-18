@@ -76,8 +76,6 @@ public class LevelManager {
 	 * @param level
 	 */
 	public static void setActiveLevel(int level) {
-		if (currentLevel == level)
-			return;
 		saveCurrentLevel();
 		TerrainManager.reset();
 		EntityManager.reset();
