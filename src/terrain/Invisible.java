@@ -25,7 +25,7 @@ public class Invisible extends Platform {
 	@Override
 	public void onCollisionUp(Entity e) {
 		// we don't want the tile to activate if the player is standing INSIDE it
-		if (Math.abs(e.getHitbox().getY1() - getHitbox().getY2()) > Entity.epsilon)
+		if (Math.abs(e.getHitbox().getY1() - getHitbox().getY2()) > Entity.EPSILON)
 			return;
 
 		activated = true;

@@ -11,19 +11,22 @@ import processing.core.PVector;
 import util.Color;
 import util.Rectangle;
 
-public class Npc extends Entity {
+public class Guide extends Entity {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	protected String name;
-	protected ArrayList<String> conversations = new ArrayList<>();
+
+	protected ArrayList<String> conversations;
 	private int conversationId = -1;
 
-	public Npc(PVector pos, String name) {
+	public Color color;
+
+	public Guide(PVector pos, ArrayList<String> conversations) {
 		super(new Rectangle(pos, new PVector(20, 40)));
-		this.name = name;
+		this.conversations = conversations;
+		color = Color.LightViolet.a(128);
 	}
 
 	public boolean isTalking() {
@@ -43,7 +46,8 @@ public class Npc extends Entity {
 	@Override
 	public void onRender() {
 		P.game.strokeWeight(0);
-		P.game.fill(color);
+		//P.game.fill(color);
+		P.game.fill(Color.LightGreen.a(128));
 		P.game.rect(hitbox, P.getCamera());
 
 		if (isTalking()) {
@@ -65,8 +69,8 @@ public class Npc extends Entity {
 			}
 			y = hitbox.getY1() - P.getCamera().y - 20 - h;
 
-			P.game.fill(Color.White.Transparent());
-			P.game.stroke(Color.Black.Transparent());
+			P.game.fill(Color.DarkGrey.a(192));
+			P.game.stroke(Color.Grey.a(192));
 			P.game.roundedRect(x, y, w, h, 5);
 			if (playerpos.x <= getHitbox().getX1()) {
 				P.game.circle(x + w, y + h + 10, 20);
@@ -76,22 +80,22 @@ public class Npc extends Entity {
 
 			// conversation
 			String text = conversations.get(conversationId);
-			P.game.fill(Color.Black.Transparent());
+			P.game.fill(Color.White.Transparent());
 			P.game.textSize(24);
 			P.game.textAlign(PConstants.CENTER, PConstants.CENTER);
-			P.game.text(text, x + margin, y + margin, w - 2 * margin, h - 2 * margin);
+			P.game.text(text, x + margin, y + margin, w - 2 * margin - x, h - 2 * margin-y);
 
 			// npc name
 			P.game.textAlign(PConstants.LEFT, PConstants.BOTTOM);
 			P.game.textSize(24);
 			P.game.fill(Color.White.Transparent());
-			// P.game.text(name, x, y);
+			P.game.text("Guide", x, y);
 		} else {
 			P.game.textAlign(PConstants.CENTER, PConstants.BOTTOM);
 			P.game.fill(Color.White.Transparent());
 			P.game.textFont(Fonts.LatoLight, 24);
-			// P.game.text(name, hitbox.getCenterX() - camera.x, hitbox.getY1() - camera.y -
-			// 10);
+		 P.game.text("Guide", hitbox.getCenterX() - P.getCamera().x, hitbox.getY1() - P.getCamera().y -
+			 10);
 		}
 	}
 

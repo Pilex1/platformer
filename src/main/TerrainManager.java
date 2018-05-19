@@ -39,7 +39,7 @@ public class TerrainManager {
 	public static final int UPDATE_RADIUS = Applet.WIDTH / 2 / TILE_SIZE + 16;
 
 	private static Tile[][] tiles = new Tile[TILES_X][TILES_Y];
-
+	
 	private static HashSet<Tile> allTiles = new HashSet<>();
 	private static HashSet<Checkpoint> allCheckpoints = new HashSet<>();
 

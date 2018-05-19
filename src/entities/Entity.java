@@ -17,15 +17,14 @@ public abstract class Entity implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public static final float epsilon = 0.1f;
+	public static final float EPSILON = 0.1f;
 
 	/**
 	 * acceleration due to gravity
 	 */
-	public static final float gravity = 0.8f;
-	public static final float verticalDrag = 0.0008f;
-
-	public static final float horizontalDrag = 0.2f;
+	public static final float GRAVITY = 0.8f;
+	public static final float VERTICAL_DRAG = 0.0008f;
+	public static final float HORIZONTAL_DRAG = 0.2f;
 
 	/*
 	 * vertical acceleration is calculated as follows: a = g - k * v^2 where g is
@@ -103,7 +102,7 @@ public abstract class Entity implements Serializable {
 			moveLeft = moveRight = false;
 
 			if (inAir()) {
-				acceleration.y = gravity - Math.signum(vel.y) * verticalDrag * vel.y * vel.y;
+				acceleration.y = GRAVITY - Math.signum(vel.y) * VERTICAL_DRAG * vel.y * vel.y;
 			} else {
 				acceleration.y = 0;
 			}
@@ -138,12 +137,12 @@ public abstract class Entity implements Serializable {
 			return;
 		}
 		while (x > 0) {
-			if (x > epsilon) {
-				moveLeftDx(epsilon);
+			if (x > EPSILON) {
+				moveLeftDx(EPSILON);
 			} else {
 				moveLeftDx(x);
 			}
-			x -= epsilon;
+			x -= EPSILON;
 		}
 	}
 
@@ -153,12 +152,12 @@ public abstract class Entity implements Serializable {
 			return;
 		}
 		while (x > 0) {
-			if (x > epsilon) {
-				moveRightDx(epsilon);
+			if (x > EPSILON) {
+				moveRightDx(EPSILON);
 			} else {
 				moveRightDx(x);
 			}
-			x -= epsilon;
+			x -= EPSILON;
 		}
 	}
 
@@ -168,12 +167,12 @@ public abstract class Entity implements Serializable {
 			return;
 		}
 		while (y > 0) {
-			if (y > epsilon) {
-				jumpDy(epsilon);
+			if (y > EPSILON) {
+				jumpDy(EPSILON);
 			} else {
 				jumpDy(y);
 			}
-			y -= epsilon;
+			y -= EPSILON;
 		}
 	}
 
@@ -183,12 +182,12 @@ public abstract class Entity implements Serializable {
 			return;
 		}
 		while (y > 0) {
-			if (y > epsilon) {
-				fallDy(epsilon);
+			if (y > EPSILON) {
+				fallDy(EPSILON);
 			} else {
 				fallDy(y);
 			}
-			y -= epsilon;
+			y -= EPSILON;
 		}
 	}
 
@@ -274,7 +273,7 @@ public abstract class Entity implements Serializable {
 	public float getCurrentFriction() {
 		ArrayList<Tile> platforms = getTilesStandingOn(true);
 		if (platforms.size() == 0)
-			return horizontalDrag;
+			return HORIZONTAL_DRAG;
 		float min = Float.MAX_VALUE;
 		for (Tile p : platforms) {
 			min = Math.min(min, p.getFriction());

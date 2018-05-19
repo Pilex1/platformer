@@ -34,7 +34,7 @@ public abstract class Tile implements Serializable {
 	 * of 0 means you will move indefinitely (think of those old school nintendo
 	 * games with the ice puzzles!)
 	 */
-	protected float friction = Entity.horizontalDrag * 1.05f;
+	protected float friction = Entity.HORIZONTAL_DRAG * 1.05f;
 
 	protected PVector pos;
 	protected Rectangle hitbox;
@@ -43,13 +43,13 @@ public abstract class Tile implements Serializable {
 	protected boolean allowRotations;
 
 	/**
-	 * if entities can jump on this block
+	 * if entities can jump on this tile
 	 */
 	public boolean allowJumps = true;
 
 	/**
-	 * if entites can make repeated jumps on this block</br>
-	 * e.g. true for a vbounceplatform, as we do not want entities to be able to
+	 * if entites can make repeated jumps on this tile</br>
+	 * e.g. falses for a vbounceplatform, as we do not want entities to be able to
 	 * bounce higher by jumping when it rebounds
 	 */
 	public boolean allowRepeatedJumps = true;
