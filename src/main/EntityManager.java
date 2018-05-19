@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import entities.Entity;
-import entities.Npc;
+import entities.Guide;
 import entities.Player;
 import processing.core.PVector;
 import terrain.Platform;
@@ -59,28 +59,28 @@ public class EntityManager {
 		entities.remove(e);
 	}
 
-	public static Npc getClosestNpc(Entity entity) {
+	public static Guide getClosestNpc(Entity entity) {
 		float minDist = Float.MAX_VALUE;
-		Npc closestNpc = null;
+		Guide closestNpc = null;
 		for (Entity e : entities) {
 			if (e == entity)
 				continue;
-			if (!(e instanceof Npc))
+			if (!(e instanceof Guide))
 				continue;
 			float dist = entity.getDistanceTo(e);
 			if (dist < minDist) {
 				minDist = dist;
-				closestNpc = (Npc) e;
+				closestNpc = (Guide) e;
 			}
 		}
 		return closestNpc;
 	}
 
-	public static ArrayList<Npc> getAllNpcs() {
-		ArrayList<Npc> npcs = new ArrayList<>();
+	public static ArrayList<Guide> getAllNpcs() {
+		ArrayList<Guide> npcs = new ArrayList<>();
 		for (Entity e : entities) {
-			if (e instanceof Npc) {
-				npcs.add((Npc) e);
+			if (e instanceof Guide) {
+				npcs.add((Guide) e);
 			}
 		}
 		return npcs;

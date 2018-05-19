@@ -21,9 +21,10 @@ public class LevelManager {
 	public static final String fileExt = ".plex";
 
 	private static ArrayList<ArrayList<Object>> levels = new ArrayList<>();
-
+	private static ArrayList<Boolean> unlocked = new ArrayList<>();
+	
 	private static int currentLevel = -1;
-
+	
 	public static void loadAllLevels() {
 		int i = 0;
 		while (new File(fileName + i + fileExt).exists()) {
@@ -38,6 +39,11 @@ public class LevelManager {
 				e.printStackTrace();
 			}
 			levels.add(list);
+			if (i == 0) {
+				unlocked.add(true);
+			} else {
+				unlocked.add(false);
+			}
 			i++;
 		}
 	}
@@ -57,10 +63,10 @@ public class LevelManager {
 				list.add(t);
 			}
 			for (Entity e : EntityManager.getAllEntities()) {
-				if (e instanceof Player)
-					continue;
-				out.writeObject(e);
-				list.add(e);
+				if (e.isSerializable()) {
+					out.writeObject(e);
+					list.add(e);
+				}
 			}
 			
 			out.writeObject(null);
@@ -69,13 +75,23 @@ public class LevelManager {
 			e.printStackTrace();
 		}
 	}
+	
+	public static void unlockLevel(int level) {
+		if (level < 0 || level>= unlocked.size()) return;
+		unlocked.set(level, true);
+	}
+	
+	public static boolean isUnlocked(int level) {
+		return unlocked.get(level);
+	}
 
 	/**
-	 * saves the current level, then sets the given active level
+	 * saves the current level, then changes the active level, only if it is unlocked
 	 * 
 	 * @param level
 	 */
 	public static void setActiveLevel(int level) {
+		if (!unlocked.get(level)) return;
 		saveCurrentLevel();
 		TerrainManager.reset();
 		EntityManager.reset();
@@ -89,7 +105,7 @@ public class LevelManager {
 				TerrainManager.addTile(t);
 			} else if (obj instanceof Entity) {
 				Entity e = (Entity) obj;
-			//	EntityManager.addEntity(e);
+				EntityManager.addEntity(e);
 			} else {
 				throw new RuntimeException();
 			}

@@ -23,6 +23,7 @@ public class ShooterProjectile extends Entity {
 		this.vel = vel;
 		calculatePhysics = false;
 		life = 120;
+		serializable=false;
 	}
 	
 	@Override

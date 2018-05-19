@@ -2,6 +2,8 @@ package main;
 
 import static main.MainApplet.P;
 
+import java.util.ArrayList;
+
 import components.Button;
 import components.Label;
 import core.DynamicGridLayout;
@@ -16,7 +18,62 @@ import util.Color;
 import util.EdgeTuple;
 
 public class Game extends GameCanvas {
-	
+
+	private ArrayList<Button> levelButtons;
+
+	private Label label_level;
+	private Label label_info;
+
+	private Label instructions1, instructions2, instructions3;
+
+	@Override
+	protected Layout initNextLevelScreen() {
+		DynamicGridLayout nextLevelScreen = new DynamicGridLayout();
+
+		PVector maxBtnSize = new PVector(700, 120);
+		EdgeTuple btnPadding = new EdgeTuple(10);
+		PVector maxHeadingSize = new PVector(700, 100);
+		int headingTextSize = 36;
+
+		DynamicGridLayout main = new DynamicGridLayout();
+		label_level = new Label("");
+		label_level.textSize = headingTextSize;
+		label_level.setMaxSize(maxHeadingSize);
+		main.addComponentToCol(label_level, 0);
+		label_info = new Label("");
+		main.addComponentToCol(label_info, 0);
+
+		DynamicGridLayout next = new DynamicGridLayout();
+		next.addComponent(new Button("Continue", () -> {
+			if (LevelManager.getCurrentLevel() == LevelManager.getNumberOfLevels() - 1) {
+				// the last level has been completed
+				// move to end screen
+				setGameState(GameState.End);
+			} else {
+				// move onto the next level
+				LevelManager.unlockLevel(LevelManager.getCurrentLevel() + 1);
+				LevelManager.setActiveLevel(LevelManager.getCurrentLevel() + 1);
+				setGameState(GameState.Game);
+			}
+		}), 0, 0);
+		next.setMaxSize(maxBtnSize);
+
+		nextLevelScreen.addComponent(main, 0, 0);
+		nextLevelScreen.addComponent(next, 0, 1);
+
+		nextLevelScreen.padding = new EdgeTuple(20);
+
+		nextLevelScreen.getAllComponents().forEach(gc -> {
+			if (gc instanceof Button) {
+				Button b = (Button) gc;
+				b.setMaxSize(maxBtnSize);
+				b.setPadding(btnPadding);
+			}
+		});
+
+		return nextLevelScreen;
+	}
+
 	@Override
 	protected void loadGame() {
 		// satie = new SoundFile(Processing, "Satie.mp3");
@@ -24,6 +81,16 @@ public class Game extends GameCanvas {
 
 		Images.load();
 		LevelManager.loadAllLevels();
+
+		instructions1 = new Label(
+				"The game is split into multiple levels, which progressively increase in difficulty. Levels must be completed in order before the next level is unlocked.",
+				20);
+		instructions2=new Label(
+				"Each level contains a variety of obstacles that you will need to overcome. To complete a level, you must navigate to the level marker, indicated by a blue flag.",
+				20);
+		instructions3=new Label(
+				"A helpful Guide will accompany you through each level, offering helpful tips and advice.",
+				20);
 	}
 
 	@Override
@@ -69,13 +136,16 @@ public class Game extends GameCanvas {
 			title.textSize = headingTextSize;
 			title.setMaxSize(maxHeadingSize);
 			levelSelect_main.addComponentToCol(title, 0);
+			levelButtons = new ArrayList<Button>();
 			for (int i = 0; i < LevelManager.getNumberOfLevels(); i++) {
 				final int level = i;
-				levelSelect_main.addComponentToCol(new Button("Level " + (i + 1), () -> {
+				Button btn = new Button("Level " + (i + 1), () -> {
 					LevelManager.setActiveLevel(level);
 					setGameState(GameState.Game);
 					layoutList.setActiveLayout(home);
-				}), 0);
+				});
+				levelSelect_main.addComponentToCol(btn, 0);
+				levelButtons.add(btn);
 			}
 
 			DynamicGridLayout levelSelect_back = new DynamicGridLayout();
@@ -94,15 +164,9 @@ public class Game extends GameCanvas {
 			title1.textSize = headingTextSize;
 			title1.setMaxSize(maxHeadingSize);
 			instructions_main.addComponentToCol(title1, 0);
-			instructions_main.addComponentToCol(new Label(
-					"The game is split into multiple levels, which increase in difficulty. Any level can be attempted, however it is recommended that the levels be attempted in order. The aim of the game is to complete all levels.",
-					20), 0);
-			instructions_main.addComponentToCol(new Label(
-					"Each level contains a variety of obstacles that you will need to overcome. To complete a level, you must find and navigate to the level marker, indicated by a blue flag.",
-					20), 0);
-			instructions_main.addComponentToCol(new Label(
-					"If you fall off the map, you will respawn at the start of the level, or at the currently active checkpoint. A checkpoint is indicated by a red flag, which turns green when you go past, indicating it is active.",
-					20), 0);
+			instructions_main.addComponentToCol(instructions1, 0);
+			instructions_main.addComponentToCol(instructions2, 0);
+			instructions_main.addComponentToCol(instructions3, 0);
 			Label title2 = new Label("Controls");
 			title2.textSize = headingTextSize;
 			title2.setMaxSize(maxHeadingSize);
@@ -228,7 +292,8 @@ public class Game extends GameCanvas {
 		title.setMaxSize(maxHeadingSize);
 		title.setFont(Fonts.Japanese);
 		home_main.addComponentToCol(title, 0);
-		home_main.addComponentToCol(new Label("You have completed all the levels and finished the game."), 0);
+		home_main.addComponentToCol(
+				new Label("You have completed all the levels and finished the game.\nThanks for playing!"), 0);
 
 		DynamicGridLayout home_exit = new DynamicGridLayout();
 		home_exit.addComponent(new Button("Return to title screen", () -> {
@@ -249,13 +314,13 @@ public class Game extends GameCanvas {
 				b.setPadding(btnPadding);
 			}
 		});
-		
+
 		return end;
 	}
 
 	@Override
 	protected void updateGame() {
-		P.game.image(Images.Background, new PVector(0,0));
+		P.game.image(Images.Background, new PVector(0, 0));
 		TerrainManager.update();
 		EntityManager.update();
 	}
@@ -284,5 +349,19 @@ public class Game extends GameCanvas {
 	@Override
 	protected void onScrollGame(MouseEvent event) {
 		EntityManager.getPlayer().onScroll(event.getCount());
+	}
+
+	@Override
+	protected void onGameStateChange(GameState state) {
+		if (state == GameState.Title) {
+			for (int i = 0; i < levelButtons.size(); i++) {
+				Button btn = levelButtons.get(i);
+				btn.disabled = !LevelManager.isUnlocked(i);
+			}
+		}
+		if (state == GameState.NextLevel) {
+			label_level.setText("Level " + (LevelManager.getCurrentLevel() + 1) + " complete!");
+			label_info.setText("\nDeaths: " + EntityManager.getPlayer().getDeaths());
+		}
 	}
 }

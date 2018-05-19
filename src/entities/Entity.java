@@ -57,7 +57,6 @@ public abstract class Entity implements Serializable {
 	protected PVector vel = new PVector(0, 0);
 	protected PVector acceleration = new PVector(0, 0);
 
-	public Color color;
 
 	/**
 	 * number of frames since the entity was last in the air
@@ -65,9 +64,15 @@ public abstract class Entity implements Serializable {
 	private int lastInAir;
 
 	private boolean moveLeft, moveRight;
+	
+	protected boolean serializable = true;
 
 	protected Entity(Rectangle hitbox) {
 		this.hitbox = hitbox;
+	}
+	
+	public boolean isSerializable() {
+		return serializable;
 	}
 
 	public float getStrafingAccel() {

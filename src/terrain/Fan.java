@@ -1,5 +1,6 @@
 package terrain;
 
+import entities.Entity;
 import entities.Player;
 import logic.Drain;
 import logic.LogicTile;
@@ -23,39 +24,46 @@ public class Fan extends Drain {
 	@Override
 	public void onUpdate() {
 		super.onUpdate();
-		float range = 8 * TerrainManager.TILE_SIZE;
-		float force = 1;
-		Player player = EntityManager.getPlayer();
-		PVector delta = player.getPos().sub(hitbox.topLeft());
-		if (delta.mag() > range) return;
-		// the actual rotation is one 90 degree turn clockwise than specified, due to
-		// how the actual PNG file is drawn
-		 System.out.println(delta);
-	//	System.out.println(player.getPos());
-		switch (rotation) {
-		case UP:
-			if (delta.x < 0)
-				return;
-			player.increaseVelx(force);
-			//System.out.println(0);
-			break;
-		case DOWN:
-			if (delta.x > 0)
-				return;
-			player.increaseVelx(-force);
-			break;
-		case RIGHT:
-			if (delta.y < 0)
-				return;
-			player.increaseVely(force);
-			break;
+		if (!active)
+			return;
+		for (Entity e : EntityManager.getAllEntities()) {
+			float range = 8 * TerrainManager.TILE_SIZE;
+			float force = 1;
+			PVector delta = e.getPos().sub(hitbox.topLeft());
+			if (delta.mag() > range)
+				continue;
+			// the actual rotation is one 90 degree turn clockwise than specified, due to
+			// how the actual PNG file is drawn
+			// System.out.println(delta);
+			
+			//System.out.println(e);
 
-		case LEFT:
-			if (delta.y > 0)
-				return;
-			player.increaseVely(-force);
-			break;
+			
+			switch (rotation) {
+			case UP:
+				if (delta.x < 0)
+					return;
+				e.increaseVelx(force);
+				break;
+			case DOWN:
+				if (delta.x > 0)
+					return;
+				e.increaseVelx(-force);
+				break;
+			case RIGHT:
+				if (delta.y < 0)
+					return;
+				e.increaseVely(force);
+				break;
+
+			case LEFT:
+				if (delta.y > 0)
+					return;
+				e.increaseVely(-force);
+				break;
+			}
 		}
+		
 	}
 
 	@Override

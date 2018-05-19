@@ -182,7 +182,7 @@ public abstract class Connection extends LogicTile {
 
 			for (Connection c : search.toArray(new Connection[0])) {
 
-				System.out.println(c);
+				//System.out.println(c);
 
 				/**
 				 * contains the neighbouring tiles to the block

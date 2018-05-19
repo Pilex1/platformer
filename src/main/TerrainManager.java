@@ -69,7 +69,7 @@ public class TerrainManager {
 		t.onLoad();
 	}
 
-	public static void removePlatform(Tile t) {
+	public static void removeTile(Tile t) {
 		int x = (int) t.getHitbox().getX1() / TILE_SIZE;
 		int y = (int) t.getHitbox().getY1() / TILE_SIZE;
 		if (tiles[x][y] == null) {

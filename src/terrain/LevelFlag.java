@@ -5,7 +5,6 @@ import static main.MainApplet.P;
 import core.GameCanvas.GameState;
 import main.EntityManager;
 import main.Images;
-import main.LevelManager;
 import processing.core.PVector;
 
 /**
@@ -29,16 +28,7 @@ public class LevelFlag extends Tile {
 	}
 
 	private void nextLevel() {
-		int level = LevelManager.getCurrentLevel();
-		if (level == LevelManager.getNumberOfLevels() - 1) {
-			// you've finished the last level!
-			// congrations!
-			P.game.setGameState(GameState.End);
-		} else {
-			// move onto next level
-			level++;
-			LevelManager.setActiveLevel(level);
-		}
+		P.game.setGameState(GameState.NextLevel);
 	}
 
 	@Override

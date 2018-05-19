@@ -13,7 +13,7 @@ import processing.core.PVector;
 import terrain.*;
 import util.*;
 
-public class Player extends Npc {
+public class Player extends Entity{
 
 	/**
 	 * 
@@ -25,24 +25,25 @@ public class Player extends Npc {
 
 	private PVector defaultSpawn;
 
-	private boolean tutorialMove = false;
-	private boolean tutorialTalk = false;
-
 	private int deaths = 0;
 
 	public Player() {
-		super(new PVector(), "");
+		super(new Rectangle(new PVector(), new PVector(20,40)));
 		hitbox.setPos(new PVector(TerrainManager.CENTER_X, TerrainManager.CENTER_Y - hitbox.getHeight()));
 
 		defaultSpawn = hitbox.topLeft().copy();
-		color = Color.White;
+		serializable =false;
+	}
+	
+	public int getDeaths() {
+		return deaths;
 	}
 
 	@Override
 	protected void onUpdate() {
 		handleInputs();
 		checkRespawning();
-		Npc npc = EntityManager.getClosestNpc(this);
+		Guide npc = EntityManager.getClosestNpc(this);
 		if (npc != null && npc.getDistanceTo(this) > npcRange) {
 			leaveAllTalking();
 		}
@@ -53,26 +54,8 @@ public class Player extends Npc {
 
 	@Override
 	public void onRender() {
-
-		P.game.transparency(128);
+		P.game.transparency(192);
 		P.game.image(Images.Player, hitbox.topLeft(), P.getCamera());
-
-		P.game.fill(Color.White);
-		P.game.textFont(Fonts.LatoLight, 32);
-		P.game.textAlign(PConstants.LEFT, PConstants.TOP);
-		if (tutorialMove == false) {
-			P.game.fill(Color.White);
-			P.game.textFont(Fonts.LatoLight, 32);
-			P.game.textAlign(PConstants.CENTER, PConstants.TOP);
-
-			P.game.text("Press W, A, S, D to move around.", P.width / 2, 20);
-		} else if (tutorialTalk == false) {
-			P.game.fill(Color.White);
-			P.game.textFont(Fonts.LatoLight, 32);
-			P.game.textAlign(PConstants.CENTER, PConstants.TOP);
-
-			P.game.text("Press ENTER when near an NPC to interact.", P.width / 2, 20);
-		}
 
 		P.game.fill(Color.White);
 		P.game.textFont(Fonts.LatoLight, 24);
@@ -86,7 +69,6 @@ public class Player extends Npc {
 	private void handleInputs() {
 		calculatePhysics = !flying;
 		if (P.keys['w']) {
-			tutorialMove = true;
 			if (flying) {
 				flyUp();
 			} else {
@@ -94,13 +76,11 @@ public class Player extends Npc {
 			}
 		}
 		if (P.keys['s']) {
-			tutorialMove = true;
 			if (flying) {
 				flyDown();
 			}
 		}
 		if (P.keys['a']) {
-			tutorialMove = true;
 			if (flying) {
 				flyLeft();
 			} else {
@@ -108,7 +88,6 @@ public class Player extends Npc {
 			}
 		}
 		if (P.keys['d']) {
-			tutorialMove = true;
 			if (flying) {
 				flyRight();
 			} else {
@@ -136,7 +115,7 @@ public class Player extends Npc {
 	}
 
 	public void leaveAllTalking() {
-		for (Npc npc : EntityManager.getAllNpcs()) {
+		for (Guide npc : EntityManager.getAllNpcs()) {
 			npc.leaveTalking();
 		}
 	}
@@ -161,11 +140,10 @@ public class Player extends Npc {
 
 	public void onKeyPress(char key) {
 		if (P.keyEnter) {
-			Npc npc = EntityManager.getClosestNpc(this);
+			Guide npc = EntityManager.getClosestNpc(this);
 			if (npc != null) {
 				if (npc.getDistanceTo(this) <= npcRange) {
 					npc.talk();
-					tutorialTalk = true;
 				}
 			}
 		}
