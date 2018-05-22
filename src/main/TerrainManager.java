@@ -56,6 +56,7 @@ public class TerrainManager {
 	public static void addTile(Tile t, boolean overwrite) {
 		int x = (int) t.getHitbox().getX1() / TILE_SIZE;
 		int y = (int) t.getHitbox().getY1() / TILE_SIZE;
+		if (x < 0 || x >= tiles.length || y < 0 || y > tiles[0].length) return;
 		if (tiles[x][y] != null && !overwrite)
 			return;
 		if (overwrite) {
@@ -124,11 +125,12 @@ public class TerrainManager {
 	}
 
 	public static Tile getTileById(int x, int y) {
+		if (x < 0 || x >= tiles.length || y < 0 || y >= tiles[0].length) return null;
 		return tiles[x][y];
 	}
 
 	public static Tile getTileAt(float x, float y) {
-		return tiles[(int) x / TILE_SIZE][(int) y / TILE_SIZE];
+		return getTileById((int)x/TILE_SIZE,(int)y/TILE_SIZE);
 	}
 
 	public static Tile getTileAt(PVector v) {

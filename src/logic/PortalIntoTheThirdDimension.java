@@ -57,5 +57,11 @@ public class PortalIntoTheThirdDimension extends Wire {
 			P.game.rect(cx + radius, cy - radius, offset, 2 * radius, P.getCamera());
 		}
 	}
+	
+	@Override
+	public void reset() {
+		super.reset();
+		hActive = vActive = false;
+	}
 
 }

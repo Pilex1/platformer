@@ -52,6 +52,7 @@ public abstract class LogicTile extends Tile implements Serializable {
 	
 	@Override
 	public void reset() {
+		active=false;
 	}
 
 	protected ArrayList<Connection> getAdjacentConnections() {

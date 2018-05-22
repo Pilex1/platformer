@@ -18,13 +18,15 @@ import util.Color;
 import util.EdgeTuple;
 
 public class Game extends GameCanvas {
+	
+	public boolean debug = true;
 
 	private ArrayList<Button> levelButtons;
 
 	private Label label_level;
 	private Label label_info;
 
-	private Label instructions1, instructions2, instructions3;
+	private Label instructions1, instructions2, instructions3, controls;
 
 	@Override
 	protected Layout initNextLevelScreen() {
@@ -91,6 +93,7 @@ public class Game extends GameCanvas {
 		instructions3=new Label(
 				"A helpful Guide will accompany you through each level, offering helpful tips and advice.",
 				20);
+		controls =new Label("W A S D : Movement\nEsc : Pause game\nEnter: Talk to Guide", 20);
 	}
 
 	@Override
@@ -171,7 +174,7 @@ public class Game extends GameCanvas {
 			title2.textSize = headingTextSize;
 			title2.setMaxSize(maxHeadingSize);
 			instructions_main.addComponentToCol(title2, 0);
-			instructions_main.addComponentToCol(new Label("W : Jump\nA/D : Move Left/Right\nEsc : Pause game", 20), 0);
+			instructions_main.addComponentToCol(controls, 0);
 			DynamicGridLayout instructions_back = new DynamicGridLayout();
 			instructions_back.addComponent(new Button("Back", () -> {
 				layoutList.setActiveLayout(home);
@@ -216,6 +219,10 @@ public class Game extends GameCanvas {
 			home_main.addComponentToCol(new Button("Return to game", () -> {
 				P.game.setGameState(GameState.Game);
 			}), 0);
+			home_main.addComponentToCol(new Button("Return to last checkpoint",()->{
+				EntityManager.getPlayer().teleportToCheckpoint(TerrainManager.getActiveCheckpoint());
+				P.game.setGameState(GameState.Game);
+			}), 0);
 			home_main.addComponentToCol(new Button("Instructions", () -> {
 				layoutList.setActiveLayout(instructions);
 			}), 0);
@@ -238,20 +245,14 @@ public class Game extends GameCanvas {
 			title1.textSize = headingTextSize;
 			title1.setMaxSize(maxHeadingSize);
 			instructions_main.addComponentToCol(title1, 0);
-			instructions_main.addComponentToCol(new Label(
-					"The game is split into multiple levels, which increase in difficulty. Any level can be attempted, however it is recommended that the levels be attempted in order. The aim of the game is to complete all levels.",
-					20), 0);
-			instructions_main.addComponentToCol(new Label(
-					"Each level contains a variety of obstacles that you will need to overcome. To complete a level, you must find and navigate to the level marker, indicated by a blue flag.",
-					20), 0);
-			instructions_main.addComponentToCol(new Label(
-					"If you fall off the map, you will respawn at the start of the level, or at the currently active checkpoint. A checkpoint is indicated by a red flag, which turns green when you go past, indicating it is active.",
-					20), 0);
+			instructions_main.addComponentToCol(instructions1, 0);
+			instructions_main.addComponentToCol(instructions2, 0);
+			instructions_main.addComponentToCol(instructions3, 0);
 			Label title2 = new Label("Controls");
 			title2.textSize = headingTextSize;
 			title2.setMaxSize(maxHeadingSize);
 			instructions_main.addComponentToCol(title2, 0);
-			instructions_main.addComponentToCol(new Label("W : Jump\nA/D : Move Left/Right\nEsc : Pause game", 20), 0);
+			instructions_main.addComponentToCol(controls, 0);
 			DynamicGridLayout instructions_back = new DynamicGridLayout();
 			instructions_back.addComponent(new Button("Back", () -> {
 				layoutList.setActiveLayout(home);
@@ -323,6 +324,12 @@ public class Game extends GameCanvas {
 		P.game.image(Images.Background, new PVector(0, 0));
 		TerrainManager.update();
 		EntityManager.update();
+		
+		// autosave just in case the game crashes!
+		if (P.frameCount % (60 * 60 * 1) == 0) {
+			LevelManager.saveCurrentLevel();
+			System.out.println("autosaved");
+		}
 	}
 
 	@Override

@@ -225,19 +225,19 @@ public abstract class Entity implements Serializable {
 	}
 
 	public final void flyUp() {
-		vel.y = -flyingSpeed.y;
+		hitbox.incrY(-flyingSpeed.y);
 	}
 
 	public final void flyDown() {
-		vel.y = flyingSpeed.y;
+		hitbox.incrY(flyingSpeed.y);
 	}
 
 	public final void flyLeft() {
-		vel.x = -flyingSpeed.x;
+		hitbox.incrX(-flyingSpeed.x);
 	}
 
 	public final void flyRight() {
-		vel.x = flyingSpeed.x;
+		hitbox.incrX(flyingSpeed.x);
 	}
 
 	public final boolean inAir() {

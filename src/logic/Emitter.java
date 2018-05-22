@@ -16,7 +16,7 @@ public abstract class Emitter extends LogicTile implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 
-	protected Emitter(PVector pos) {
+	public Emitter(PVector pos) {
 		super(pos);
 	}
 	

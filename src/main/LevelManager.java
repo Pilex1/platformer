@@ -103,9 +103,12 @@ public class LevelManager {
 			if (obj instanceof Tile) {
 				Tile t = (Tile) obj;
 				TerrainManager.addTile(t);
+				t.reset();
+				t.onLoad();
 			} else if (obj instanceof Entity) {
 				Entity e = (Entity) obj;
 				EntityManager.addEntity(e);
+				e.onLoad();
 			} else {
 				throw new RuntimeException();
 			}

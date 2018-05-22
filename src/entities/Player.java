@@ -41,8 +41,16 @@ public class Player extends Entity{
 
 	@Override
 	protected void onUpdate() {
+		if (flying) {
+			vel.x = vel.y = 0;
+
+		}
 		handleInputs();
-		checkRespawning();
+		
+		// respawning
+		if (hitbox.getCenterY() >= TerrainManager.TILE_SIZE * TerrainManager.TILES_Y) {
+			teleportToCheckpoint(TerrainManager.getActiveCheckpoint());
+		}
 		Guide npc = EntityManager.getClosestNpc(this);
 		if (npc != null && npc.getDistanceTo(this) > npcRange) {
 			leaveAllTalking();
@@ -67,7 +75,6 @@ public class Player extends Entity{
 
 	
 	private void handleInputs() {
-		calculatePhysics = !flying;
 		if (P.keys['w']) {
 			if (flying) {
 				flyUp();
@@ -96,24 +103,6 @@ public class Player extends Entity{
 		}
 	}
 
-	private void checkRespawning() {
-		// respawning
-		if (hitbox.getCenterY() >= TerrainManager.TILE_SIZE * TerrainManager.TILES_Y) {
-			Checkpoint c = TerrainManager.getActiveCheckpoint();
-			if (c == null) {
-				hitbox.setPos(defaultSpawn);
-			} else {
-				teleportToCheckpoint(c);
-			}
-			setVel(new PVector(0, 0));
-			TerrainManager.resetBlocks();
-			if (c != null) {
-				c.onUpdate();
-			}
-			deaths++;
-		}
-	}
-
 	public void leaveAllTalking() {
 		for (Guide npc : EntityManager.getAllNpcs()) {
 			npc.leaveTalking();
@@ -129,13 +118,26 @@ public class Player extends Entity{
 	}
 
 	public void teleportToCheckpoint(Checkpoint c) {
+		if (c == null) {
+			// teleport to spawn
+			hitbox.setPos(defaultSpawn);
+		} else {
+			hitbox.setX1(c.getHitbox().getX1());
+			hitbox.setY2(c.getHitbox().getY2());
+		}
 		setVel(new PVector(0, 0));
-		hitbox.setX1(c.getHitbox().getX1());
-		hitbox.setY2(c.getHitbox().getY2());
+		deaths++;
+		TerrainManager.resetBlocks();
+		if (c!=null) {
+			c.onUpdate();
+		}
 	}
 
 	public void toggleFlying() {
 		flying = !flying;
+		calculatePhysics = !flying;
+		vel.x = vel.y = 0;
+		acceleration.x = acceleration.y = 0;
 	}
 
 	public void onKeyPress(char key) {

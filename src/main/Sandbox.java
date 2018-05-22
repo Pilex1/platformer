@@ -33,6 +33,7 @@ import entities.Guide;
 import logic.AndGate;
 import logic.Diode;
 import logic.Inverter;
+import logic.PermanentOutput;
 import logic.PortalIntoTheThirdDimension;
 import logic.Sensor;
 import logic.Wire;
@@ -43,11 +44,10 @@ public class Sandbox {
 		None, Tile, Size, Remove, Guide
 	}
 
-	private static Class<?>[] platformTypes = new Class<?>[] {
-			Platform.class, VBounce.class, HBounce.class, Ice.class, Invisible.class, Phantom.class, Shooter.class,
-			Interface.class, InterfacePlatform.class, Fan.class, /* Moving.class, */
-			Checkpoint.class, LevelFlag.class, Wire.class, Sensor.class, AndGate.class,
-			PortalIntoTheThirdDimension.class, Inverter.class, Diode.class };
+	private static Class<?>[] platformTypes = new Class<?>[] { Platform.class, VBounce.class, HBounce.class, Ice.class,
+			Invisible.class, Phantom.class, Shooter.class, Checkpoint.class, LevelFlag.class, Wire.class,
+			PortalIntoTheThirdDimension.class, AndGate.class, Inverter.class, Diode.class, Sensor.class, PermanentOutput.class,
+			Interface.class, InterfacePlatform.class, Fan.class, };
 	private static int currentPlatform = 0;
 
 	private static PVector pos1 = null;
@@ -56,12 +56,13 @@ public class Sandbox {
 	private static GuideRemovalPlatform removal = new GuideRemovalPlatform(new PVector());
 	private static GuideGuide guide = new GuideGuide(new PVector());
 
-	public static boolean enabled = true;
 	private static Action currentAction = Action.None;
 
 	private static int frameRate = -1;
 
 	public static void update() {
+		if (!P.game.debug)
+			return;
 		// System.out.println(currentAction);
 		PVector mousePos = getMousePos();
 		if (currentAction == Action.Tile) {
@@ -109,15 +110,15 @@ public class Sandbox {
 		} else if (currentAction == Action.Guide) {
 			Tile selectedTile = getSelectedTile();
 			if (selectedTile == null) {
-				PVector pos = blockify(mousePos, TerrainManager.TILE_SIZE);
-				pos.y += TerrainManager.TILE_SIZE - 40;
-				guide.getHitbox().setPos(pos);
+				pos1 = blockify(mousePos, TerrainManager.TILE_SIZE);
+				pos1.y += TerrainManager.TILE_SIZE - 40;
+				guide.getHitbox().setPos(pos1);
 			}
 		}
 	}
 
 	public static void render() {
-		if (!enabled)
+		if (!P.game.debug)
 			return;
 
 		P.game.fill(Color.White);
@@ -263,17 +264,15 @@ public class Sandbox {
 			System.out.println("Enter guide conversation (newline to end):");
 
 			ArrayList<String> conversations = new ArrayList<>();
-			Scanner reader = new Scanner(System.in);
-			String curLine = reader.nextLine();
+			String curLine = P.scanner.nextLine();
 			while (!curLine.equals("")) {
 				conversations.add(curLine);
-				curLine = reader.nextLine();
+				curLine = P.scanner.nextLine();
 			}
-			reader.close();
 
 			Guide g = new Guide(guidePos, conversations);
 			EntityManager.addEntity(g);
-			
+
 			System.out.println("Guide added");
 		}
 	}
@@ -298,14 +297,14 @@ public class Sandbox {
 	}
 
 	public static void onKeyPress(char key) {
-		if (!enabled)
+		if (!P.game.debug)
 			return;
 		if (key == KeyEvent.VK_ESCAPE) {
 			currentAction = Action.None;
 			P.game.allowPausing(true);
 		}
 		if (key == 'f') {
-			// EntityManager.getPlayer().toggleFlying();
+			EntityManager.getPlayer().toggleFlying();
 		}
 		if (key == 'e') {
 			currentAction = Action.Tile;

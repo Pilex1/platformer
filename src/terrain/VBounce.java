@@ -16,7 +16,11 @@ public class VBounce extends Platform {
 
 	public VBounce(PVector pos) {
 		super(pos);
-		allowRepeatedJumps=true;
+	}
+	
+	@Override
+	public void onLoad() {
+		allowRepeatedJumps=false;
 	}
 	
 	@Override
