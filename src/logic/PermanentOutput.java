@@ -3,7 +3,7 @@ package logic;
 import main.Images;
 import processing.core.PVector;
 
-public class PermanentOutput extends Emitter{
+public class PermanentOutput extends Emitter {
 
 	/**
 	 * 
@@ -12,6 +12,7 @@ public class PermanentOutput extends Emitter{
 
 	public PermanentOutput(PVector pos) {
 		super(pos);
+		active=true;
 	}
 
 	@Override
@@ -21,6 +22,7 @@ public class PermanentOutput extends Emitter{
 
 	@Override
 	public void onUpdate() {
+		updateAround();
 	}
 
 	@Override

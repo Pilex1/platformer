@@ -28,6 +28,7 @@ public abstract class Connection extends LogicTile {
 
 	@Override
 	public void onLoad() {
+		super.onLoad();
 		updateAround();
 	}
 

@@ -34,6 +34,7 @@ import logic.AndGate;
 import logic.Diode;
 import logic.Inverter;
 import logic.PermanentOutput;
+import logic.PlatformWire;
 import logic.PortalIntoTheThirdDimension;
 import logic.Sensor;
 import logic.Wire;
@@ -45,7 +46,7 @@ public class Sandbox {
 	}
 
 	private static Class<?>[] platformTypes = new Class<?>[] { Platform.class, VBounce.class, HBounce.class, Ice.class,
-			Invisible.class, Phantom.class, Shooter.class, Checkpoint.class, LevelFlag.class, Wire.class,
+			Invisible.class, Phantom.class, Shooter.class, Checkpoint.class, LevelFlag.class, Wire.class, PlatformWire.class,
 			PortalIntoTheThirdDimension.class, AndGate.class, Inverter.class, Diode.class, Sensor.class, PermanentOutput.class,
 			Interface.class, InterfacePlatform.class, Fan.class, };
 	private static int currentPlatform = 0;
@@ -61,7 +62,7 @@ public class Sandbox {
 	private static int frameRate = -1;
 
 	public static void update() {
-		if (!P.game.debug)
+		if (!MainApplet.debug)
 			return;
 		// System.out.println(currentAction);
 		PVector mousePos = getMousePos();
@@ -118,7 +119,7 @@ public class Sandbox {
 	}
 
 	public static void render() {
-		if (!P.game.debug)
+		if (!MainApplet.debug)
 			return;
 
 		P.game.fill(Color.White);
@@ -297,7 +298,7 @@ public class Sandbox {
 	}
 
 	public static void onKeyPress(char key) {
-		if (!P.game.debug)
+		if (!MainApplet.debug)
 			return;
 		if (key == KeyEvent.VK_ESCAPE) {
 			currentAction = Action.None;

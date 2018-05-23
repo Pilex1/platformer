@@ -34,7 +34,7 @@ public abstract class Tile implements Serializable {
 	 * of 0 means you will move indefinitely (think of those old school nintendo
 	 * games with the ice puzzles!)
 	 */
-	protected float friction = Entity.HORIZONTAL_DRAG * 1.05f;
+	protected float friction;
 
 	protected PVector pos;
 	protected Rectangle hitbox;
@@ -63,7 +63,7 @@ public abstract class Tile implements Serializable {
 		this.pos = pos;
 		hitbox = new Rectangle(pos, new PVector(TerrainManager.TILE_SIZE, TerrainManager.TILE_SIZE));
 	}
-
+	
 	public Direction getRotation() {
 		return rotation;
 	}
@@ -80,6 +80,7 @@ public abstract class Tile implements Serializable {
 	 * must be calculated
 	 */
 	public void onLoad() {
+		friction = Entity.HORIZONTAL_DRAG * 1.1f;
 	}
 
 	public abstract void onUpdate();

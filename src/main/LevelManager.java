@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import entities.Entity;
 import entities.Player;
 import terrain.Tile;
+import static main.MainApplet.P;
 
 public class LevelManager {
 
@@ -39,7 +40,7 @@ public class LevelManager {
 				e.printStackTrace();
 			}
 			levels.add(list);
-			if (i == 0) {
+			if (i == 0 || MainApplet.debug) {
 				unlocked.add(true);
 			} else {
 				unlocked.add(false);

@@ -19,6 +19,7 @@ public class Invisible extends Platform {
 
 	@Override
 	public void onLoad() {
+		super.onLoad();
 		reset();
 	}
 

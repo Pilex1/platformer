@@ -29,7 +29,7 @@ public class Interface extends Drain {
 	public void onUpdate() {
 		super.onUpdate();
 
-		int range = 8;
+		int range = 12;
 		for (int i = 1; i < range; i++) {
 			Tile t = TerrainManager.getTileRelative(this, rotation.rotateClockwise(), i);
 			if (t instanceof InterfacePlatform) {

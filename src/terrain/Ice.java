@@ -16,6 +16,11 @@ public class Ice extends Tile {
 		allowMovement=false;
 		allowJumps=false;
 	}
+	
+	@Override
+	public void onLoad() {
+		friction = 0;
+	}
 
 	@Override
 	public void onUpdate() {

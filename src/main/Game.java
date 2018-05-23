@@ -19,7 +19,6 @@ import util.EdgeTuple;
 
 public class Game extends GameCanvas {
 	
-	public boolean debug = true;
 
 	private ArrayList<Button> levelButtons;
 

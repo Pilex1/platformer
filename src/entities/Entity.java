@@ -47,9 +47,7 @@ public abstract class Entity implements Serializable {
 
 	protected Rectangle hitbox;
 
-	/**
-	 * set this to false if flying
-	 */
+	protected boolean flying = false;
 	protected boolean calculatePhysics = true;
 	protected PVector flyingSpeed = new PVector(8f, 8f);
 
@@ -92,7 +90,7 @@ public abstract class Entity implements Serializable {
 		if (calculatePhysics) {
 			// vel.x = vel.x * getCurrentFriction() * horizontalDrag;
 
-			acceleration.x = -Math.signum(vel.x) * getCurrentFriction() * Math.abs(vel.x);
+			acceleration.x = -Math.signum(vel.x) * getCurrentFriction() * (float)Math.pow(Math.abs(vel.x),1);
 			if (moveLeft) {
 				acceleration.x -= strafingAcceleration;
 			}
@@ -114,6 +112,11 @@ public abstract class Entity implements Serializable {
 
 		} else {
 			// vel.y = 0;
+		}
+		
+		if (flying) {
+			vel.x=vel.y = 0;
+			acceleration.x=acceleration.y=0;
 		}
 
 		moveRight(vel.x);

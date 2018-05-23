@@ -20,6 +20,7 @@ public class VBounce extends Platform {
 	
 	@Override
 	public void onLoad() {
+		super.onLoad();
 		allowRepeatedJumps=false;
 	}
 	

@@ -21,7 +21,6 @@ public class Player extends Entity{
 	private static final long serialVersionUID = 1L;
 
 	private float npcRange = 300;
-	private boolean flying = false;
 
 	private PVector defaultSpawn;
 
