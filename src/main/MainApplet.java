@@ -9,7 +9,7 @@ public class MainApplet extends Applet {
 
 	public Game game;
 	
-	public static boolean debug = true;
+	public static boolean debug = false;
 
 	@Override
 	public void setup() {
