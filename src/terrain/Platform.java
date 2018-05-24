@@ -5,6 +5,11 @@ import java.io.*;
 import main.Images;
 import processing.core.PVector;
 
+/**
+ * a good ol' regular tile
+ * @author pilex
+ *
+ */
 public class Platform extends Tile implements Serializable {
 
 	/**

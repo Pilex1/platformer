@@ -30,6 +30,8 @@ public class Checkpoint extends Tile {
 
 	@Override
 	public void onUpdate() {
+		// if the player is on this checkpoint, then we deactivate all other checkpoints
+		// and activate this checkpoint
 		if (isIntersecting(EntityManager.getPlayer())) {
 			for (Checkpoint c : TerrainManager.getAllCheckpoints()) {
 				c.checked = false;

@@ -11,6 +11,11 @@ import main.EntityManager;
 import main.Images;
 import main.TerrainManager;
 
+/**
+ * periodically shoots projectiles which pushes the player around
+ * @author pilex
+ *
+ */
 public class Shooter extends Drain {
 
 	/**
@@ -18,6 +23,9 @@ public class Shooter extends Drain {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * cooldown until the shooter can shoot again
+	 */
 	protected int cooldown;
 
 	public Shooter(PVector pos) {
@@ -46,12 +54,10 @@ public class Shooter extends Drain {
 		// because then it would get stuck in the tile
 		// consider a circle of diameter 25 sqrt2 centered around the current tile
 		// we spawn the projectile at angle theta around the circumference of the circle
-		PVector center = new PVector((float) (25 * 2 * Math.cos(theta)), (float) (25 * 2 * Math.sin(theta)));
-		center = center.add(hitbox.getCenter());
-		PVector pos = center.add(new PVector(-10, -10));
+		PVector pos = new PVector((float) (25 * 2 * Math.cos(theta)), (float) (25 * 2 * Math.sin(theta)));
+		pos = pos.add(hitbox.getCenter());
 		PVector vel = new PVector((float) (speed * Math.cos(theta)), (float) (speed * Math.sin(theta)));
-		// vel = new PVector(0,0);
-		ShooterProjectile proj = new ShooterProjectile(center, vel);
+		ShooterProjectile proj = new ShooterProjectile(pos, vel);
 		EntityManager.addEntity(proj);
 	}
 
@@ -63,6 +69,9 @@ public class Shooter extends Drain {
 			cooldown--;
 		}
 
+		// we shoot a projectile when the tile is active and the cooldown reaches 0
+		// and when the distance between this tile and the player is within a 2 - 8 tile range
+		// then we reset the cooldown
 		float rangeMin = 2 * TerrainManager.TILE_SIZE;
 		float rangeMax = 8 * TerrainManager.TILE_SIZE;
 		if (active && cooldown == 0) {

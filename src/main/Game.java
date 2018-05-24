@@ -17,7 +17,6 @@ import util.Color;
 import util.EdgeTuple;
 
 public class Game extends GameCanvas {
-	
 
 	private ArrayList<Button> levelButtons;
 
@@ -85,13 +84,12 @@ public class Game extends GameCanvas {
 		instructions1 = new Label(
 				"The game is split into multiple levels, which progressively increase in difficulty. Levels must be completed in order before the next level is unlocked.",
 				20);
-		instructions2=new Label(
+		instructions2 = new Label(
 				"Each level contains a variety of obstacles that you will need to overcome. To complete a level, you must navigate to the level marker, indicated by a blue flag.",
 				20);
-		instructions3=new Label(
-				"A helpful Guide will accompany you through each level, offering helpful tips and advice.",
-				20);
-		controls =new Label("W A S D : Movement\nEsc : Pause game\nEnter: Talk to Guide", 20);
+		instructions3 = new Label(
+				"A helpful Guide will accompany you through each level, offering helpful tips and advice.", 20);
+		controls = new Label("W A S D : Movement\nEsc : Pause game\nEnter: Talk to Guide", 20);
 	}
 
 	@Override
@@ -217,7 +215,7 @@ public class Game extends GameCanvas {
 			home_main.addComponentToCol(new Button("Return to game", () -> {
 				P.game.setGameState(GameState.Game);
 			}), 0);
-			home_main.addComponentToCol(new Button("Return to last checkpoint",()->{
+			home_main.addComponentToCol(new Button("Return to last checkpoint", () -> {
 				EntityManager.getPlayer().teleportToCheckpoint(TerrainManager.getActiveCheckpoint());
 				P.game.setGameState(GameState.Game);
 			}), 0);
@@ -291,9 +289,11 @@ public class Game extends GameCanvas {
 		title.setMaxSize(maxHeadingSize);
 		title.setFont(Fonts.Japanese);
 		home_main.addComponentToCol(title, 0);
+		home_main.addComponentToCol(new Label(
+				"If the Guide really didn't have any control over what he said, would he really be able to have that final conversation with you? The Guide is the real evil mastermind behind everything. After all it's him that designed all the levels and lead you through them right?!"),
+				0);
 		home_main.addComponentToCol(
-				new Label("If the Guide really didn't have any control over what he said, would he really be able to have that final conversation with you? Surely the Guide is the real evil genius behind everything. After all it's him that designed all the levels and lead you through them!"), 0);
-		home_main.addComponentToCol(new Label("You have completed all the levels and finished the game.\nThanks for playing!"), 0);
+				new Label("You have completed all the levels and finished the game.\nThanks for playing!"), 0);
 
 		DynamicGridLayout home_exit = new DynamicGridLayout();
 		home_exit.addComponent(new Button("Return to title screen", () -> {
@@ -323,12 +323,12 @@ public class Game extends GameCanvas {
 		P.game.image(Images.Background, new PVector(0, 0));
 		TerrainManager.update();
 		EntityManager.update();
-		
+
 		// autosave just in case the game crashes!
-		if (P.frameCount % (60 * 60 * 1) == 0) {
-			LevelManager.saveCurrentLevel();
-		//	System.out.println("autosaved");
-		}
+		// if (P.frameCount % (60 * 60 * 1) == 0) {
+		// LevelManager.saveCurrentLevel();
+		// System.out.println("autosaved");
+		// }
 	}
 
 	@Override

@@ -19,11 +19,20 @@ public class LevelManager {
 	public static final String fileName = "level";
 	public static final String fileExt = ".plex";
 
+	/**
+	 * stores all the data in each level
+	 */
 	private static ArrayList<ArrayList<Object>> levels = new ArrayList<>();
+	/**
+	 * stores whether a given level is unlocked or not
+	 */
 	private static ArrayList<Boolean> unlocked = new ArrayList<>();
 	
 	private static int currentLevel = -1;
 	
+	/**
+	 * loads all the level data from the files
+	 */
 	public static void loadAllLevels() {
 		int i = 0;
 		while (new File(fileName + i + fileExt).exists()) {
@@ -48,8 +57,12 @@ public class LevelManager {
 	}
 
 	public static void saveCurrentLevel() {
+		// if there is no active level we do nothing
 		if (currentLevel == -1)
 			return;
+		// if we are not in debug mode we do nothing
+		// the levels shouldn't require saving
+		if (!MainApplet.debug)return;
 		try {
 			ArrayList<Object> list = levels.get(currentLevel);
 			list.clear();
@@ -85,7 +98,8 @@ public class LevelManager {
 	}
 
 	/**
-	 * saves the current level, then changes the active level, only if it is unlocked
+	 * if the input level is locked then we do nothing
+	 * otherwise we save the current level, then initialise the new level
 	 * 
 	 * @param level
 	 */

@@ -59,7 +59,12 @@ public class EntityManager {
 		entities.remove(e);
 	}
 
-	public static Guide getClosestNpc(Entity entity) {
+	/**
+	 * gets the closest guide to the input entity
+	 * @param entity
+	 * @return
+	 */
+	public static Guide getClosestGuide(Entity entity) {
 		float minDist = Float.MAX_VALUE;
 		Guide closestNpc = null;
 		for (Entity e : entities) {
@@ -76,7 +81,7 @@ public class EntityManager {
 		return closestNpc;
 	}
 
-	public static ArrayList<Guide> getAllNpcs() {
+	public static ArrayList<Guide> getGuides() {
 		ArrayList<Guide> npcs = new ArrayList<>();
 		for (Entity e : entities) {
 			if (e instanceof Guide) {
@@ -99,6 +104,11 @@ public class EntityManager {
 		return entities;
 	}
 	
+	/**
+	 * gets all the entities colliding with the input entity
+	 * @param search
+	 * @return
+	 */
 	public static ArrayList<Entity> getCollisions(Entity search) {
 		ArrayList<Entity> list = new ArrayList<>();
 		for (Entity e : entities) {
@@ -110,10 +120,22 @@ public class EntityManager {
 		return list;
 	}
 	
+	/**
+	 * finds the distance between the two entities
+	 * @param a
+	 * @param b
+	 * @return
+	 */
 	public static float distBetween(Entity a, Entity b) {
 		return distBetween(a.getHitbox(),b.getHitbox());
 	}
 	
+	/**
+	 * finds the distance between two rectangles
+	 * @param a
+	 * @param b
+	 * @return
+	 */
 	public static float distBetween(Rectangle a, Rectangle b) {
 		return a.topLeft().dist(b.topLeft());
 	}

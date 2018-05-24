@@ -49,7 +49,7 @@ public abstract class Entity implements Serializable {
 
 	protected boolean flying = false;
 	protected boolean calculatePhysics = true;
-	protected PVector flyingSpeed = new PVector(8f, 8f);
+	protected PVector flyingSpeed = new PVector(16f, 16f);
 
 	protected PVector vel = new PVector(0, 0);
 	protected PVector acceleration = new PVector(0, 0);
@@ -66,6 +66,16 @@ public abstract class Entity implements Serializable {
 
 	protected Entity(Rectangle hitbox) {
 		this.hitbox = hitbox;
+	}
+	
+	
+	public float getSpeed() {
+		return vel.mag();
+	}
+	
+	public float getTerminalVelocity() {
+		// read the comment up above for an explanation of how this is calculated
+		return (float) Math.sqrt(GRAVITY/VERTICAL_DRAG);
 	}
 	
 	public boolean isSerializable() {
@@ -90,6 +100,7 @@ public abstract class Entity implements Serializable {
 		if (calculatePhysics) {
 			// vel.x = vel.x * getCurrentFriction() * horizontalDrag;
 
+			// horizontal drag
 			acceleration.x = -Math.signum(vel.x) * getCurrentFriction() * (float)Math.pow(Math.abs(vel.x),1);
 			if (moveLeft) {
 				acceleration.x -= strafingAcceleration;
@@ -100,6 +111,7 @@ public abstract class Entity implements Serializable {
 			moveLeft = moveRight = false;
 
 			if (inAir()) {
+				// vertical drag
 				acceleration.y = GRAVITY - Math.signum(vel.y) * VERTICAL_DRAG * vel.y * vel.y;
 			} else {
 				acceleration.y = 0;
@@ -108,7 +120,6 @@ public abstract class Entity implements Serializable {
 			vel.x += acceleration.x;
 			vel.y += acceleration.y;
 
-			// System.out.println(acceleration.x);
 
 		} else {
 			// vel.y = 0;

@@ -37,20 +37,33 @@ import logic.PortalIntoTheThirdDimension;
 import logic.Sensor;
 import logic.Wire;
 
+/**
+ * this class is used to help create a level provides user-friendly functions to
+ * place/remove tiles, rotate tiles, add/remove guides NOTE this is not seen in
+ * the released version
+ * 
+ * @author pilex
+ *
+ */
 public class Sandbox {
 
 	private static enum Action {
 		None, Tile, Size, Remove, Guide
 	}
 
-	private static Class<?>[] platformTypes = new Class<?>[] { Platform.class, VBounce.class, HBounce.class, Ice.class,
-			Invisible.class, Phantom.class, Shooter.class, Checkpoint.class, LevelFlag.class, Wire.class, PlatformWire.class,
-			PortalIntoTheThirdDimension.class, AndGate.class, Inverter.class, Diode.class, Sensor.class, PermanentOutput.class,
-			Interface.class, InterfacePlatform.class, Fan.class, };
-	private static int currentPlatform = 0;
+	/**
+	 * the tiles we can place into the world
+	 */
+	private static Class<?>[] tileTypes = new Class<?>[] { Platform.class, VBounce.class, HBounce.class, Ice.class,
+			Invisible.class, Phantom.class, Shooter.class, Checkpoint.class, LevelFlag.class, Wire.class,
+			PlatformWire.class, PortalIntoTheThirdDimension.class, AndGate.class, Inverter.class, Diode.class,
+			Sensor.class, PermanentOutput.class, Interface.class, InterfacePlatform.class, Fan.class, };
+	/**
+	 * id of the current tile we've selected
+	 */
+	private static int currentTile = 0;
 
 	private static PVector pos1 = null;
-
 	private static GuidePlatform tile1 = new GuidePlatform(new PVector());
 	private static GuideRemovalPlatform removal = new GuideRemovalPlatform(new PVector());
 	private static GuideGuide guide = new GuideGuide(new PVector());
@@ -102,10 +115,10 @@ public class Sandbox {
 				removal.getHitbox().setSize(selectedEntity.getHitbox().getSize());
 				if (P.mousePressed && P.mouseButton == PConstants.LEFT) {
 					if (selectedEntity instanceof Guide) {
-						Guide g = (Guide)selectedEntity;
+						Guide g = (Guide) selectedEntity;
 						ArrayList<String> conv = g.getConversations();
 						System.out.println("Guide conversation:");
-						conv.forEach(s->System.out.println(s));
+						conv.forEach(s -> System.out.println(s));
 					}
 					EntityManager.removeEntity(selectedEntity);
 				}
@@ -152,7 +165,7 @@ public class Sandbox {
 
 		if (currentAction == Action.Tile) {
 			P.game.textAlign(PConstants.CENTER, PConstants.BOTTOM);
-			P.game.text(platformTypes[currentPlatform].getCanonicalName(), P.width / 2, P.height);
+			P.game.text(tileTypes[currentTile].getCanonicalName(), P.width / 2, P.height);
 		}
 
 		if (currentAction == Action.Tile || currentAction == Action.Size) {
@@ -240,7 +253,7 @@ public class Sandbox {
 					// unless we're placing down a Checkpoint,
 					// in which case dragging is disabled and we just place the checkpoint
 
-					if (platformTypes[currentPlatform] == Checkpoint.class) {
+					if (tileTypes[currentTile] == Checkpoint.class) {
 						PVector pos = pos1.copy();
 						TerrainManager.addTile(createTile(Checkpoint.class, pos));
 						pos1 = null;
@@ -284,14 +297,14 @@ public class Sandbox {
 
 	public static void onMouseRelease(int mouseButton) {
 		if (currentAction == Action.Size && pos1 != null) {
-			if (platformTypes[currentPlatform] != Checkpoint.class) {
+			if (tileTypes[currentTile] != Checkpoint.class) {
 				Rectangle rect = new Rectangle(tile1.getHitbox().topLeft(), tile1.getHitbox().getSize()).regularise();
 				for (int i = 0; i < rect.getWidth() / TerrainManager.TILE_SIZE; i++) {
 					for (int j = 0; j < rect.getHeight() / TerrainManager.TILE_SIZE; j++) {
 						PVector pos = rect.topLeft().copy();
 						pos.x += i * TerrainManager.TILE_SIZE;
 						pos.y += j * TerrainManager.TILE_SIZE;
-						Tile t = createTile(platformTypes[currentPlatform], pos);
+						Tile t = createTile(tileTypes[currentTile], pos);
 						TerrainManager.addTile(t);
 					}
 				}
@@ -331,9 +344,9 @@ public class Sandbox {
 
 	public static void onScroll(int scrollAmt) {
 		if (scrollAmt < 0) {
-			currentPlatform = (currentPlatform - 1 + platformTypes.length) % platformTypes.length;
+			currentTile = (currentTile - 1 + tileTypes.length) % tileTypes.length;
 		} else if (scrollAmt > 0) {
-			currentPlatform = (currentPlatform + 1) % platformTypes.length;
+			currentTile = (currentTile + 1) % tileTypes.length;
 		}
 	}
 

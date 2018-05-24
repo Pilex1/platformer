@@ -9,6 +9,11 @@ import processing.core.PVector;
 import terrain.Tile;
 import util.Rectangle;
 
+/**
+ * the shooter tile shoots shooterprojectiles which push entities around
+ * @author pilex
+ *
+ */
 public class ShooterProjectile extends Entity {
 
 	/**
@@ -48,6 +53,7 @@ public class ShooterProjectile extends Entity {
 
 	@Override
 	protected void onUpdate() {
+		// if it colides with terrain we remove it
 		if (TerrainManager.getCollisions(this, true, true).size() > 0) {
 			EntityManager.removeEntity(this);
 		}
@@ -56,6 +62,7 @@ public class ShooterProjectile extends Entity {
 		ArrayList<Entity> collisions = EntityManager.getCollisions(this);
 		for (Entity e : collisions) {
 			if (e instanceof ShooterProjectile) continue;
+			// if it collides with an entity, we push that entity, before removing this projectile
 			float factor = 2.5f;
 			e.vel.x += factor * vel.x;
 			e.vel.y += factor * vel.y;

@@ -49,10 +49,20 @@ public class TerrainManager {
 		allCheckpoints.clear();
 	}
 
+	/**
+	 * adds the given tile to the terrain only if there is not already another tile there
+	 * @param t
+	 */
 	public static void addTile(Tile t) {
 		addTile(t, false);
 	}
 
+	/**
+	 * adds the given tile to the terrain
+	 * <code>overwrite</code> controls if we are allowed to overwrite an existing tile
+	 * @param t
+	 * @param overwrite
+	 */
 	public static void addTile(Tile t, boolean overwrite) {
 		int x = (int) t.getHitbox().getX1() / TILE_SIZE;
 		int y = (int) t.getHitbox().getY1() / TILE_SIZE;
@@ -141,6 +151,10 @@ public class TerrainManager {
 		return allTiles;
 	}
 
+	/**
+	 * gets all the tiles around the player that will fit in the render area
+	 * @return
+	 */
 	public static ArrayList<Tile> getActiveTiles() {
 
 		ArrayList<Tile> l = new ArrayList<>();

@@ -7,6 +7,12 @@ import main.Images;
 import main.TerrainManager;
 import processing.core.PVector;
 
+/**
+ * pushes entities in a certain direction
+ * 
+ * @author pilex
+ *
+ */
 public class Fan extends Drain {
 
 	/**
@@ -28,15 +34,15 @@ public class Fan extends Drain {
 			float range = 8 * TerrainManager.TILE_SIZE;
 			float force = 1;
 			PVector delta = e.getPos().sub(hitbox.topLeft());
+			
+			// we only push entities within an 8 tile range
 			if (delta.mag() > range)
 				continue;
-			// the actual rotation is one 90 degree turn clockwise than specified, due to
-			// how the actual PNG file is drawn
-			// System.out.println(delta);
 			
-			//System.out.println(e);
-
+			// calculate the actual pushing
 			
+			// note that the actual rotation is one 90 degree turn clockwise than specified,
+			// due to how the actual PNG file is drawn
 			switch (rotation) {
 			case UP:
 				if (delta.x < 0)
@@ -61,7 +67,7 @@ public class Fan extends Drain {
 				break;
 			}
 		}
-		
+
 	}
 
 	@Override

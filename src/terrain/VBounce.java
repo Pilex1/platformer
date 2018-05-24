@@ -5,6 +5,11 @@ import entities.*;
 import main.Images;
 import processing.core.*;
 
+/**
+ * bounces entities vertically
+ * @author pilex
+ *
+ */
 public class VBounce extends Platform {
 
 	/**

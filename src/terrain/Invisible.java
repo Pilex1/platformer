@@ -4,7 +4,9 @@ import entities.*;
 import main.EntityManager;
 import processing.core.*;
 
-// invisible until the player jumps and hits the block
+/*
+ *  invisible until the player jumps and hits the block
+ */
 public class Invisible extends Platform {
 
 	/**

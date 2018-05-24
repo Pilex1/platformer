@@ -3,6 +3,11 @@ package terrain;
 import main.Images;
 import processing.core.PVector;
 
+/**
+ * a frictionless tile that disables all movement
+ * @author pilex
+ *
+ */
 public class Ice extends Tile {
 
 	/**

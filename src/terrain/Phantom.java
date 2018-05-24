@@ -5,7 +5,9 @@ import main.EntityManager;
 import main.Images;
 import processing.core.*;
 
-// appears to be a regular block, then disappears when standing on it or jumping and hitting it
+/*
+ *  appears to be a regular block, then disappears when standing on it or jumping and hitting it
+ */
 public class Phantom extends Platform {
 
 	/**

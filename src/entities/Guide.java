@@ -28,11 +28,11 @@ public class Guide extends Entity {
 		this.conversations = conversations;
 		color = Color.LightViolet.a(128);
 	}
-	
+
 	public ArrayList<String> getConversations() {
 		return conversations;
 	}
-	
+
 	public void onLoad() {
 		leaveTalking();
 	}
@@ -46,15 +46,18 @@ public class Guide extends Entity {
 	}
 
 	public void talk() {
+		// loads the next conversation line
+		// if we reach to the end, then we set the state to not talking
 		conversationId++;
-		if (conversationId >= conversations.size())
+		if (conversationId >= conversations.size()) {
 			conversationId = -1;
+		}
 	}
 
 	@Override
 	public void onRender() {
 		P.game.strokeWeight(0);
-		//P.game.fill(color);
+		// P.game.fill(color);
 		P.game.fill(Color.LightGreen.a(128));
 		P.game.rect(hitbox, P.getCamera());
 
@@ -91,7 +94,7 @@ public class Guide extends Entity {
 			P.game.fill(Color.White.Transparent());
 			P.game.textSize(24);
 			P.game.textAlign(PConstants.CENTER, PConstants.CENTER);
-			P.game.text(text, x + margin, y + margin, w - 2 * margin - x, h - 2 * margin-y);
+			P.game.text(text, x + margin, y + margin, w - 2 * margin - x, h - 2 * margin - y);
 
 			// npc name
 			P.game.textAlign(PConstants.LEFT, PConstants.BOTTOM);
@@ -102,8 +105,7 @@ public class Guide extends Entity {
 			P.game.textAlign(PConstants.CENTER, PConstants.BOTTOM);
 			P.game.fill(Color.White.Transparent());
 			P.game.textFont(Fonts.LatoLight, 24);
-		 P.game.text("Guide", hitbox.getCenterX() - P.getCamera().x, hitbox.getY1() - P.getCamera().y -
-			 10);
+			P.game.text("Guide", hitbox.getCenterX() - P.getCamera().x, hitbox.getY1() - P.getCamera().y - 10);
 		}
 	}
 

@@ -19,11 +19,20 @@ public class Player extends Entity{
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private float npcRange = 300;
+	/**
+	 * the distance the player needs to be within to interact with the guide
+	 */
+	private float guideRange = 8 * TerrainManager.TILE_SIZE;
 
 	private PVector defaultSpawn;
 
 	private int deaths = 0;
+	
+	/**
+	 * stores the number of frames elapsed since the player has reached >= 90% terminal velocity
+	 * the player automatically respawns when this reaches a certain amount
+	 */
+	private int c;
 
 	public Player() {
 		super(new Rectangle(new PVector(), new PVector(20,40)));
@@ -41,17 +50,22 @@ public class Player extends Entity{
 	protected void onUpdate() {
 		if (flying) {
 			vel.x = vel.y = 0;
-
 		}
 		handleInputs();
 		
-		// respawning
+		if (vel.y >= 0.9 * getTerminalVelocity()) {
+			c++;
+		} else {
+			c = 0;
+		}
+		// if the player has been at >= 0.9 * terminal velocity for more than 1 second, we force a respawn
+		if (c >= 1 * 60) {
+		teleportToCheckpoint(TerrainManager.getActiveCheckpoint());
+		}
+		
+		// if the player is at the bottom of the world, we also respawn
 		if (hitbox.getCenterY() >= TerrainManager.TILE_SIZE * TerrainManager.TILES_Y) {
 			teleportToCheckpoint(TerrainManager.getActiveCheckpoint());
-		}
-		Guide npc = EntityManager.getClosestNpc(this);
-		if (npc != null && npc.getDistanceTo(this) > npcRange) {
-			leaveAllTalking();
 		}
 		Sandbox.update();
 
@@ -101,8 +115,11 @@ public class Player extends Entity{
 		}
 	}
 
+	/**
+	 * stops any active conversations with the guide
+	 */
 	public void leaveAllTalking() {
-		for (Guide npc : EntityManager.getAllNpcs()) {
+		for (Guide npc : EntityManager.getGuides()) {
 			npc.leaveTalking();
 		}
 	}
@@ -116,6 +133,10 @@ public class Player extends Entity{
 	}
 
 	public void teleportToCheckpoint(Checkpoint c) {
+		Guide npc = EntityManager.getClosestGuide(this);
+		if (npc != null && npc.getDistanceTo(this) > guideRange) {
+			leaveAllTalking();
+		}
 		if (c == null) {
 			// teleport to spawn
 			hitbox.setPos(defaultSpawn);
@@ -129,6 +150,7 @@ public class Player extends Entity{
 		if (c!=null) {
 			c.onUpdate();
 		}
+		
 	}
 
 	public void toggleFlying() {
@@ -140,9 +162,10 @@ public class Player extends Entity{
 
 	public void onKeyPress(char key) {
 		if (P.keyEnter) {
-			Guide npc = EntityManager.getClosestNpc(this);
+			// interact with the guide on enter
+			Guide npc = EntityManager.getClosestGuide(this);
 			if (npc != null) {
-				if (npc.getDistanceTo(this) <= npcRange) {
+				if (npc.getDistanceTo(this) <= guideRange) {
 					npc.talk();
 				}
 			}

@@ -6,6 +6,11 @@ import entities.*;
 import main.Images;
 import processing.core.*;
 
+/**
+ * a block that bounces an entity horizontally (and a tiny bit vertically)
+ * @author pilex
+ *
+ */
 public class HBounce extends Platform implements Serializable {
 
 	/**
