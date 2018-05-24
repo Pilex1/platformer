@@ -25,8 +25,6 @@ import java.awt.event.KeyEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Scanner;
-
 import core.Fonts;
 import entities.Entity;
 import entities.Guide;
@@ -103,6 +101,12 @@ public class Sandbox {
 				removal.getHitbox().setPos(selectedEntity.getHitbox().topLeft());
 				removal.getHitbox().setSize(selectedEntity.getHitbox().getSize());
 				if (P.mousePressed && P.mouseButton == PConstants.LEFT) {
+					if (selectedEntity instanceof Guide) {
+						Guide g = (Guide)selectedEntity;
+						ArrayList<String> conv = g.getConversations();
+						System.out.println("Guide conversation:");
+						conv.forEach(s->System.out.println(s));
+					}
 					EntityManager.removeEntity(selectedEntity);
 				}
 			} else {

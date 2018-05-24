@@ -1,6 +1,7 @@
 package terrain;
 
 import entities.*;
+import main.EntityManager;
 import processing.core.*;
 
 // invisible until the player jumps and hits the block
@@ -25,12 +26,14 @@ public class Invisible extends Platform {
 
 	@Override
 	public void onCollisionUp(Entity e) {
-		// we don't want the tile to activate if the player is standing INSIDE it
-		if (Math.abs(e.getHitbox().getY1() - getHitbox().getY2()) > Entity.EPSILON)
-			return;
+		if (e == EntityManager.getPlayer()) {
+			// we don't want the tile to activate if the player is standing INSIDE it
+			if (Math.abs(e.getHitbox().getY1() - getHitbox().getY2()) > Entity.EPSILON)
+				return;
 
-		activated = true;
-		solid = true;
+			activated = true;
+			solid = true;
+		}
 		super.onCollisionUp(e);
 	}
 

@@ -1,6 +1,5 @@
 package terrain;
 
-import processing.core.PConstants;
 import processing.core.PVector;
 import util.MathUtil;
 
@@ -8,7 +7,6 @@ import static main.MainApplet.P;
 
 import entities.ShooterProjectile;
 import logic.Drain;
-import logic.LogicTile;
 import main.EntityManager;
 import main.Images;
 import main.TerrainManager;
@@ -65,9 +63,11 @@ public class Shooter extends Drain {
 			cooldown--;
 		}
 
-		float range = 8 * TerrainManager.TILE_SIZE;
+		float rangeMin = 2 * TerrainManager.TILE_SIZE;
+		float rangeMax = 8 * TerrainManager.TILE_SIZE;
 		if (active && cooldown == 0) {
-			if (EntityManager.distBetween(hitbox, EntityManager.getPlayer().getHitbox()) <= range) {
+			float dist = EntityManager.distBetween(hitbox, EntityManager.getPlayer().getHitbox());
+			if (dist >= rangeMin && dist <= rangeMax) {
 				shoot();
 				resetCooldown();
 			}

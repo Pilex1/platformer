@@ -11,7 +11,6 @@ import core.Fonts;
 import core.GameCanvas;
 import core.Layout;
 import core.LayoutList;
-import processing.core.PImage;
 import processing.core.PVector;
 import processing.event.MouseEvent;
 import util.Color;
@@ -293,7 +292,8 @@ public class Game extends GameCanvas {
 		title.setFont(Fonts.Japanese);
 		home_main.addComponentToCol(title, 0);
 		home_main.addComponentToCol(
-				new Label("You have completed all the levels and finished the game.\nThanks for playing!"), 0);
+				new Label("If the Guide really didn't have any control over what he said, would he really be able to have that final conversation with you? Surely the Guide is the real evil genius behind everything. After all it's him that designed all the levels and lead you through them!"), 0);
+		home_main.addComponentToCol(new Label("You have completed all the levels and finished the game.\nThanks for playing!"), 0);
 
 		DynamicGridLayout home_exit = new DynamicGridLayout();
 		home_exit.addComponent(new Button("Return to title screen", () -> {
@@ -327,7 +327,7 @@ public class Game extends GameCanvas {
 		// autosave just in case the game crashes!
 		if (P.frameCount % (60 * 60 * 1) == 0) {
 			LevelManager.saveCurrentLevel();
-			System.out.println("autosaved");
+		//	System.out.println("autosaved");
 		}
 	}
 

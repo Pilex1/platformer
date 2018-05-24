@@ -3,7 +3,6 @@ package entities;
 import static main.MainApplet.*;
 
 import core.Fonts;
-import core.GameCanvas.GameState;
 import main.EntityManager;
 import main.Images;
 import main.Sandbox;

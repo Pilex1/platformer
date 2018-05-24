@@ -1,6 +1,7 @@
 package terrain;
 
 import entities.*;
+import main.EntityManager;
 import main.Images;
 import processing.core.*;
 
@@ -16,28 +17,34 @@ public class Phantom extends Platform {
 	public Phantom(PVector pos) {
 		super(pos);
 	}
-	
+
 	@Override
 	public void onLoad() {
 		reset();
 	}
+
 	@Override
 	public void onCollisionUp(Entity e) {
-		activated = true;
-		solid = false;
+		if (e == EntityManager.getPlayer()) {
+			activated = true;
+			solid = false;
+		}
 	}
 
 	@Override
 	public void onCollisionDown(Entity e) {
-		activated = true;
-		solid = false;
+		if (e == EntityManager.getPlayer()) {
+			activated = true;
+			solid = false;
+		}
 	}
-	
+
 	@Override
 	public void onStanding(Entity e) {
-		System.out.println(0);
-		activated=true;
-		solid=false;
+		if (e == EntityManager.getPlayer()) {
+			activated = true;
+			solid = false;
+		}
 	}
 
 	@Override

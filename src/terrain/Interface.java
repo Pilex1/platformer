@@ -1,7 +1,6 @@
 package terrain;
 
 import logic.Drain;
-import logic.LogicTile;
 import main.Images;
 import main.TerrainManager;
 import processing.core.PVector;

@@ -55,7 +55,8 @@ public class ShooterProjectile extends Entity {
 		
 		ArrayList<Entity> collisions = EntityManager.getCollisions(this);
 		for (Entity e : collisions) {
-			float factor = 3;
+			if (e instanceof ShooterProjectile) continue;
+			float factor = 2.5f;
 			e.vel.x += factor * vel.x;
 			e.vel.y += factor * vel.y;
 			EntityManager.removeEntity(this);

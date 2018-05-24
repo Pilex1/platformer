@@ -1,9 +1,7 @@
 package terrain;
 
 import entities.Entity;
-import entities.Player;
 import logic.Drain;
-import logic.LogicTile;
 import main.EntityManager;
 import main.Images;
 import main.TerrainManager;
@@ -42,23 +40,23 @@ public class Fan extends Drain {
 			switch (rotation) {
 			case UP:
 				if (delta.x < 0)
-					return;
+					continue;
 				e.increaseVelx(force);
 				break;
 			case DOWN:
 				if (delta.x > 0)
-					return;
+					continue;
 				e.increaseVelx(-force);
 				break;
 			case RIGHT:
 				if (delta.y < 0)
-					return;
+					continue;
 				e.increaseVely(force);
 				break;
 
 			case LEFT:
 				if (delta.y > 0)
-					return;
+					continue;
 				e.increaseVely(-force);
 				break;
 			}

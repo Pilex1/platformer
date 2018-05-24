@@ -28,6 +28,14 @@ public class Guide extends Entity {
 		this.conversations = conversations;
 		color = Color.LightViolet.a(128);
 	}
+	
+	public ArrayList<String> getConversations() {
+		return conversations;
+	}
+	
+	public void onLoad() {
+		leaveTalking();
+	}
 
 	public boolean isTalking() {
 		return conversationId != -1;
@@ -69,8 +77,8 @@ public class Guide extends Entity {
 			}
 			y = hitbox.getY1() - P.getCamera().y - 20 - h;
 
-			P.game.fill(Color.DarkGrey.a(192));
-			P.game.stroke(Color.Grey.a(192));
+			P.game.fill(Color.DarkGrey.a(210));
+			P.game.stroke(Color.Grey.a(210));
 			P.game.roundedRect(x, y, w, h, 5);
 			if (playerpos.x <= getHitbox().getX1()) {
 				P.game.circle(x + w, y + h + 10, 20);

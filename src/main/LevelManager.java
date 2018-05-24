@@ -9,9 +9,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import entities.Entity;
-import entities.Player;
 import terrain.Tile;
-import static main.MainApplet.P;
 
 public class LevelManager {
 

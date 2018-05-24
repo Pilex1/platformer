@@ -12,11 +12,18 @@ public class HBounce extends Platform implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private float hBounceStrength = 35f;
-	private float vBounceStrength = -8f;
+	private float hBounceStrength;
+	private float vBounceStrength;
 
 	public HBounce(PVector pos) {
 		super(pos);
+	}
+	
+	@Override
+	public void onLoad() {
+		super.onLoad();
+		hBounceStrength=28f;
+		vBounceStrength = -8f;
 	}
 
 	@Override
